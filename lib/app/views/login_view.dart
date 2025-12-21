@@ -1,4 +1,3 @@
-import 'dart:ui';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/controllers/auth_controller.dart';
@@ -56,33 +55,23 @@ class _LoginViewState extends State<LoginView> {
                 children: [
                   // 🧩 Logo
                   Image.asset(
-                    "assets/images/logo_satpam.png",
-                    color: Colors.white,
+                    "assets/images/qbsc_bos.png",
+
                     colorBlendMode: BlendMode.srcIn,
                     width: isTablet ? 220 : 180,
                   ),
-                  const SizedBox(height: 20),
 
                   // 🏷️ Judul
-                  Text(
-                    "Login",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: isTablet ? 28 : 24,
-                      fontWeight: FontWeight.bold,
-                      letterSpacing: 1.2,
-                    ),
-                  ),
                   const SizedBox(height: 40),
 
                   // 📱 Nomor WA
                   TextField(
-                    keyboardType: TextInputType.phone,
+                    keyboardType: TextInputType.emailAddress,
                     controller: emailController,
                     textInputAction: TextInputAction.next,
                     style: const TextStyle(color: Colors.white),
                     decoration: InputDecoration(
-                      hintText: 'Whatsapp',
+                      hintText: 'Email',
                       hintStyle: TextStyle(
                         color: Colors.white.withOpacity(0.7),
                         fontSize: isTablet ? 18 : 14,
@@ -94,7 +83,7 @@ class _LoginViewState extends State<LoginView> {
                         borderSide: BorderSide(color: Colors.white),
                       ),
                       prefixIcon: const Icon(
-                        Icons.phone_android,
+                        Icons.email,
                         color: Colors.white70,
                       ),
                     ),

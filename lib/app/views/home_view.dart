@@ -1,5 +1,7 @@
+import 'dart:async';
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:cached_network_image/cached_network_image.dart';
 import 'package:qbsc_saas/app/controllers/absen_controller.dart';
 import 'package:qbsc_saas/app/controllers/auth_controller.dart';
 import 'package:qbsc_saas/app/controllers/home_controller.dart';
@@ -14,13 +16,23 @@ class HomeView extends StatefulWidget {
 }
 
 class _HomeViewState extends State<HomeView> {
-  late List<Map<String, dynamic>> menuItems;
-
   final AuthController authC = Get.put(AuthController());
   final HomeController homeC = Get.put(HomeController());
   final AbsenController absenC = Get.put(AbsenController());
 
   final String? isPeternakan = AppPrefs.getIsPeternakan();
+
+  final PageController _pageController = PageController();
+  int _currentSlide = 0;
+  Timer? _timer;
+
+  final List<String> sliderImages = [
+    'https://images.unsplash.com/photo-1581090700227-1e37b190418e',
+    'https://images.unsplash.com/photo-1581092160607-ee22621dd758',
+    'https://images.unsplash.com/photo-1581092795360-fd1ca04f0952',
+  ];
+
+  late List<Map<String, dynamic>> menuItems;
 
   @override
   void initState() {
@@ -28,6 +40,30 @@ class _HomeViewState extends State<HomeView> {
     _loadUserPhoto();
     absenC.getLocationData();
     _initMenu();
+    _autoSlide();
+    _prefetchImages();
+  }
+
+  void _prefetchImages() {
+    for (final url in sliderImages) {
+      precacheImage(CachedNetworkImageProvider(url), context);
+    }
+  }
+
+  @override
+  void dispose() {
+    _timer?.cancel();
+    _pageController.dispose();
+    super.dispose();
+  }
+
+  void _autoSlide() {
+    _timer = Timer.periodic(const Duration(seconds: 4), (_) {
+      _pageController.nextPage(
+        duration: const Duration(milliseconds: 450),
+        curve: Curves.easeInOut,
+      );
+    });
   }
 
   void _initMenu() {
@@ -36,8 +72,8 @@ class _HomeViewState extends State<HomeView> {
       {'icon': 'assets/images/patroli.png', 'label': 'Patroli'},
       {'icon': 'assets/images/laporan.png', 'label': 'Laporan'},
       {'icon': 'assets/images/kejadian.png', 'label': 'Kejadian'},
-      {'icon': 'assets/images/setting.png', 'label': 'Pengaturan'},
       {'icon': 'assets/images/tamu.png', 'label': 'Tamu'},
+      {'icon': 'assets/images/setting.png', 'label': 'Pengaturan'},
     ];
 
     if (isPeternakan == '1') {
@@ -57,30 +93,6 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-  // ================= SYNC =================
-  void _showSyncDialog() {
-    Get.dialog(
-      AlertDialog(
-        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(16)),
-        title: const Text('Sinkronisasi Data'),
-        content: const Text(
-          'Apakah Anda yakin ingin menyinkronkan data sekarang?',
-        ),
-        actions: [
-          TextButton(onPressed: Get.back, child: const Text('Batal')),
-          ElevatedButton(
-            onPressed: () {
-              Get.back();
-            },
-            child: const Text('Sinkronkan'),
-          ),
-        ],
-      ),
-      barrierDismissible: false,
-    );
-  }
-
-  // ================= MENU ACTION =================
   void _onMenuTap(String label) {
     final routes = {
       'Absensi': '/shift',
@@ -98,165 +110,86 @@ class _HomeViewState extends State<HomeView> {
     }
   }
 
-  // ================= UI =================
   @override
   Widget build(BuildContext context) {
-    final isTablet = MediaQuery.of(context).size.width >= 600;
-
     return Scaffold(
       backgroundColor: const Color(0xFFF5F7FB),
       appBar: _buildAppBar(),
-      floatingActionButton: _buildEmergencyButton(),
-      body: SafeArea(
-        child: SingleChildScrollView(
-          padding: EdgeInsets.symmetric(
-            horizontal: isTablet ? 32 : 16,
-            vertical: 20,
-          ),
-          child: Column(
-            children: [
-              _buildProfileCard(isTablet),
-              const SizedBox(height: 28),
-              _buildMenuGrid(isTablet),
-            ],
-          ),
+      body: SingleChildScrollView(
+        padding: const EdgeInsets.all(16),
+        child: Column(
+          children: [
+            _buildProfileCard(),
+            const SizedBox(height: 20),
+            _buildImageSlider(),
+            const SizedBox(height: 24),
+            _buildSummarySection(),
+            const SizedBox(height: 24),
+            _buildMonitoringMenu(),
+          ],
         ),
       ),
     );
   }
 
-  // ================= COMPONENTS =================
-
   AppBar _buildAppBar() {
     return AppBar(
+      backgroundColor: const Color(0xFF0F172A),
       elevation: 0,
-      backgroundColor: const Color(0xFF2C2C2C),
       title: const Text(
-        'Dashboard',
-        style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+        'CEO Dashboard',
+        style: TextStyle(fontWeight: FontWeight.w600),
       ),
       actions: [
-        Obx(
-          () => Stack(
-            children: [
-              IconButton(
-                icon: const Icon(
-                  Icons.notifications_outlined,
-                  color: Colors.white,
-                ),
-                onPressed: () {
-                  homeC.clear();
-                  Get.toNamed('/notifikasi');
-                },
-              ),
-              if (homeC.unreadCount.value > 0)
-                Positioned(
-                  right: 8,
-                  top: 8,
-                  child: CircleAvatar(
-                    radius: 9,
-                    backgroundColor: Colors.red,
-                    child: Text(
-                      homeC.unreadCount.value.toString(),
-                      style: const TextStyle(fontSize: 11, color: Colors.white),
-                    ),
-                  ),
-                ),
-            ],
-          ),
-        ),
         IconButton(
-          icon: const Icon(Icons.sync, color: Colors.white),
-          onPressed: _showSyncDialog,
+          icon: const Icon(Icons.notifications_none),
+          onPressed: () => Get.toNamed('/notifikasi'),
         ),
-        IconButton(
-          icon: const Icon(Icons.logout, color: Colors.white),
-          onPressed: authC.logout,
-        ),
+        IconButton(icon: const Icon(Icons.logout), onPressed: authC.logout),
       ],
     );
   }
 
-  Widget _buildEmergencyButton() {
-    return FloatingActionButton.extended(
-      backgroundColor: Colors.red.shade700,
-      icon: const Icon(Icons.warning_amber_rounded, color: Colors.white),
-      label: const Text(
-        'Kontak Darurat',
-        style: TextStyle(color: Colors.white),
-      ),
-      onPressed: () => Get.toNamed('/darurat'),
-    );
-  }
-
-  Widget _buildProfileCard(bool isTablet) {
+  Widget _buildProfileCard() {
     return Obx(() {
       final photo = "${ApiProvider.imageUrl}/${authC.userPhoto.value}";
-
       return Container(
+        padding: const EdgeInsets.all(18),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04), // shadow halus ala iOS
-              blurRadius: 18,
-              offset: const Offset(0, 10),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(18),
         ),
-        padding: const EdgeInsets.symmetric(horizontal: 20, vertical: 18),
         child: Row(
           children: [
-            // FOTO PROFIL
             CircleAvatar(
-              radius: isTablet ? 38 : 32,
-              backgroundColor: const Color(0xFFE5E5EA), // iOS system gray
+              radius: 30,
               backgroundImage: authC.userPhoto.value.isNotEmpty
                   ? NetworkImage(photo)
                   : const AssetImage('assets/images/satpam_default.png')
                         as ImageProvider,
             ),
-
-            const SizedBox(width: 16),
-
-            // TEKS
+            const SizedBox(width: 14),
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  Text(
-                    'Selamat Bertugas',
-                    style: TextStyle(
-                      fontSize: 13,
-                      color: Colors.grey.shade600,
-                      fontWeight: FontWeight.w400,
-                    ),
+                  const Text(
+                    'Welcome back',
+                    style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
-
-                  const SizedBox(height: 6),
-
+                  const SizedBox(height: 4),
                   Text(
                     AppPrefs.getUserName() ?? '-',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 20,
-                      fontWeight: FontWeight.w600, // iOS preferred weight
-                      color: Color(0xFF1C1C1E),
+                      fontSize: 18,
+                      fontWeight: FontWeight.w600,
                     ),
                   ),
-
-                  const SizedBox(height: 2),
-
                   Text(
                     AppPrefs.getCompanyName() ?? '-',
-                    maxLines: 1,
-                    overflow: TextOverflow.ellipsis,
                     style: const TextStyle(
-                      fontSize: 14,
-                      fontWeight: FontWeight.w500,
-                      color: Color(0xFF34C759), // iOS green
+                      fontSize: 13,
+                      color: Color(0xFF34C759),
                     ),
                   ),
                 ],
@@ -268,80 +201,172 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  Widget _buildMenuGrid(bool isTablet) {
-    return GridView.builder(
-      shrinkWrap: true,
-      physics: const NeverScrollableScrollPhysics(),
-      itemCount: menuItems.length,
-      gridDelegate: SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: isTablet ? 3 : 2,
-        crossAxisSpacing: 18,
-        mainAxisSpacing: 18,
-      ),
-      itemBuilder: (_, i) {
-        final item = menuItems[i];
-        return _MenuCard(
-          icon: item['icon'],
-          label: item['label'],
-          onTap: () => _onMenuTap(item['label']),
+  Widget _buildImageSlider() {
+    return Column(
+      children: [
+        SizedBox(
+          height: 160,
+          child: ClipRRect(
+            borderRadius: BorderRadius.circular(18),
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: null, // infinite
+              onPageChanged: (index) {
+                setState(() => _currentSlide = index % sliderImages.length);
+              },
+              itemBuilder: (_, index) {
+                final imageUrl = sliderImages[index % sliderImages.length];
+                return CachedNetworkImage(
+                  imageUrl: imageUrl,
+                  fit: BoxFit.cover,
+                  fadeInDuration: const Duration(milliseconds: 300),
+                  placeholder: (_, __) => const _HighContrastShimmer(),
+                  errorWidget: (_, __, ___) => Container(
+                    color: Colors.grey.shade300,
+                    child: const Icon(Icons.image_not_supported, size: 40),
+                  ),
+                );
+              },
+            ),
+          ),
+        ),
+        const SizedBox(height: 8),
+        Row(
+          mainAxisAlignment: MainAxisAlignment.center,
+          children: List.generate(sliderImages.length, (i) {
+            final active = _currentSlide == i;
+            return AnimatedContainer(
+              duration: const Duration(milliseconds: 250),
+              margin: const EdgeInsets.symmetric(horizontal: 4),
+              width: active ? 18 : 6,
+              height: 6,
+              decoration: BoxDecoration(
+                color: active ? const Color(0xFF0F172A) : Colors.grey.shade400,
+                borderRadius: BorderRadius.circular(6),
+              ),
+            );
+          }),
+        ),
+      ],
+    );
+  }
+
+  Widget _buildSummarySection() {
+    return Row(
+      children: const [
+        _SummaryCard(title: 'Satpam Aktif', value: '12'),
+        SizedBox(width: 12),
+        _SummaryCard(title: 'Patroli Hari Ini', value: '48'),
+      ],
+    );
+  }
+
+  Widget _buildMonitoringMenu() {
+    return Column(
+      children: menuItems.map((item) {
+        return Card(
+          elevation: 0,
+          shape: RoundedRectangleBorder(
+            borderRadius: BorderRadius.circular(14),
+          ),
+          child: ListTile(
+            leading: Image.asset(item['icon'], width: 32),
+            title: Text(
+              item['label'],
+              style: const TextStyle(fontWeight: FontWeight.w600),
+            ),
+            trailing: const Icon(Icons.chevron_right),
+            onTap: () => _onMenuTap(item['label']),
+          ),
         );
-      },
+      }).toList(),
     );
   }
 }
 
-// ================= MENU CARD =================
-
-class _MenuCard extends StatelessWidget {
-  final String icon;
-  final String label;
-  final VoidCallback onTap;
-
-  const _MenuCard({
-    required this.icon,
-    required this.label,
-    required this.onTap,
-  });
+class _SummaryCard extends StatelessWidget {
+  final String title;
+  final String value;
+  const _SummaryCard({required this.title, required this.value});
 
   @override
   Widget build(BuildContext context) {
-    return GestureDetector(
-      onTap: onTap,
+    return Expanded(
       child: Container(
+        padding: const EdgeInsets.all(16),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(22),
-          boxShadow: [
-            BoxShadow(
-              color: Colors.black.withOpacity(0.04), // shadow tipis ala iOS
-              blurRadius: 16,
-              offset: const Offset(0, 8),
-            ),
-          ],
+          borderRadius: BorderRadius.circular(16),
         ),
-        padding: const EdgeInsets.symmetric(vertical: 22),
         child: Column(
-          mainAxisAlignment: MainAxisAlignment.center,
+          crossAxisAlignment: CrossAxisAlignment.start,
           children: [
-            // ICON BESAR TANPA KOTAK
-            Image.asset(icon, width: 64, height: 64, fit: BoxFit.contain),
-
-            const SizedBox(height: 18),
-
-            // LABEL
             Text(
-              label,
-              textAlign: TextAlign.center,
-              style: const TextStyle(
-                fontSize: 15,
-                fontWeight: FontWeight.w500, // iOS style
-                color: Color(0xFF1C1C1E),
-                letterSpacing: 0.2,
-              ),
+              title,
+              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+            ),
+            const SizedBox(height: 8),
+            Text(
+              value,
+              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
             ),
           ],
         ),
       ),
+    );
+  }
+}
+
+class _HighContrastShimmer extends StatefulWidget {
+  const _HighContrastShimmer();
+  @override
+  State<_HighContrastShimmer> createState() => _HighContrastShimmerState();
+}
+
+class _HighContrastShimmerState extends State<_HighContrastShimmer>
+    with SingleTickerProviderStateMixin {
+  late AnimationController _controller;
+
+  @override
+  void initState() {
+    super.initState();
+    _controller = AnimationController(
+      vsync: this,
+      duration: const Duration(milliseconds: 900),
+    )..repeat();
+  }
+
+  @override
+  void dispose() {
+    _controller.dispose();
+    super.dispose();
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return Stack(
+      fit: StackFit.expand,
+      children: [
+        Container(color: Colors.black.withOpacity(0.28)),
+        AnimatedBuilder(
+          animation: _controller,
+          builder: (_, __) {
+            return Container(
+              decoration: BoxDecoration(
+                gradient: LinearGradient(
+                  begin: Alignment(-1.5 + _controller.value * 3, 0),
+                  end: const Alignment(1.5, 0),
+                  colors: [
+                    Colors.grey.shade900.withOpacity(0.25),
+                    Colors.white.withOpacity(0.65),
+                    Colors.grey.shade900.withOpacity(0.25),
+                  ],
+                ),
+              ),
+            );
+          },
+        ),
+      ],
     );
   }
 }

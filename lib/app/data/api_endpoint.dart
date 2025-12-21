@@ -1,6 +1,9 @@
 class ApiEndpoint {
   // Auth
-  static const String login = "/login";
+  static const apiPrefix = "/bos";
+
+  static const String login = "$apiPrefix/login";
+
   static const String register = "/auth/register";
   static const String verifyFace = '/verify_face';
   static const String absenActive = '/absen_active';
@@ -8,20 +11,6 @@ class ApiEndpoint {
   static const String getDataLocation = '/get_data_location';
   static const String updateLocationCoordinates =
       '/update_location_coordinates';
-
-  static const String sendPatroliToServer = '/send_patroli_to_server';
-  static const String getDataKandang = '/get_data_kandang';
-  static const String getDataEkspedisi = '/get_data_ekspedisi';
-  static const String syncSuhuKandang = '/sync_suhu_kandang';
-  static const String syncKipasKandang = '/sync_kipas_kandang';
-  static const String syncAlarmKandang = '/sync_alarm_kandang';
-  static const String syncLampuKandang = '/sync_lampu_kandang';
-  static const String syncDocReport = '/sync_doc_report';
-  static const String getDataShift = '/get_data_shift';
-  static const String laporanSituasi = '/laporan_situasi';
-  static const String checkQrTamu = '/check_qr_tamu';
-  static const String saveDataTamu = '/save_data_tamu';
-  static const String tambahDataTamu = '/tambah_data_tamu';
 
   static const String getListTamu = '/get_list_tamu';
   static const String updateStatusTamu = '/update_status_tamu';
