@@ -1,0 +1,136 @@
+import 'package:firebase_core/firebase_core.dart';
+import 'package:firebase_messaging/firebase_messaging.dart';
+import 'package:flutter/material.dart';
+import 'package:flutter_local_notifications/flutter_local_notifications.dart';
+import 'package:get/get.dart';
+
+import 'package:qbsc_saas/app/data/api_provider.dart';
+import 'package:qbsc_saas/app/controllers/home_controller.dart'; // 🔥 DITAMBAHKAN
+import 'package:qbsc_saas/app/controllers/auth_controller.dart'; // 🔥 DITAMBAHKAN
+
+import 'package:qbsc_saas/app/utils/app_prefs.dart';
+import 'package:qbsc_saas/app/utils/firebase_background_handler.dart';
+import 'package:qbsc_saas/app/utils/topic_service.dart';
+
+import 'package:qbsc_saas/app/views/emergency/emgergency.dart';
+import 'package:qbsc_saas/app/views/home_view.dart';
+import 'package:qbsc_saas/app/views/login_view.dart';
+import 'package:qbsc_saas/app/views/notif/notif.dart';
+import 'package:qbsc_saas/app/views/pengaturan/password/change_password.dart';
+import 'package:qbsc_saas/app/views/pengaturan/pengaturan.dart';
+import 'package:qbsc_saas/app/views/pengaturan/profil/profil.dart';
+import 'package:qbsc_saas/app/views/splash_view.dart';
+
+final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
+    FlutterLocalNotificationsPlugin();
+
+Future<void> main() async {
+  WidgetsFlutterBinding.ensureInitialized();
+
+  await Firebase.initializeApp();
+  FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
+
+  // ===========================
+  //  ANDROID NOTIFICATION SETUP
+  // ===========================
+  const AndroidNotificationChannel channel = AndroidNotificationChannel(
+    'high_importance_channel',
+    'High Importance Notifications',
+    description: 'This channel is used for important notifications',
+    importance: Importance.high,
+    playSound: true,
+    sound: RawResourceAndroidNotificationSound('notif'),
+  );
+
+  await flutterLocalNotificationsPlugin
+      .resolvePlatformSpecificImplementation<
+        AndroidFlutterLocalNotificationsPlugin
+      >()
+      ?.createNotificationChannel(channel);
+
+  const initAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
+  const initSettings = InitializationSettings(android: initAndroid);
+  await flutterLocalNotificationsPlugin.initialize(initSettings);
+
+  // ===========================
+  //  HIVE DATABASE
+  // ===========================
+
+  await Get.putAsync<ApiProvider>(() async => await ApiProvider().init());
+  await AppPrefs.init();
+
+  // ====================================
+  //  PUT CONTROLLERS GLOBAL (🔥 WAJIB)
+  // ====================================
+  Get.put(HomeController(), permanent: true); // 🔥 NOTIF BADGE
+  Get.put(AuthController(), permanent: true); // 🔥 untuk foto dll
+
+  runApp(MyApp());
+}
+
+class MyApp extends StatefulWidget {
+  const MyApp({super.key});
+
+  @override
+  State<MyApp> createState() => _MyAppState();
+}
+
+class _MyAppState extends State<MyApp> {
+  final homeC = Get.find<HomeController>(); // 🔥 akses badge notif
+
+  @override
+  void initState() {
+    super.initState();
+    TopicService.initializeTopicOnStartup();
+    setupForegroundMessageHandler();
+  }
+
+  void setupForegroundMessageHandler() {
+    FirebaseMessaging.onMessage.listen((message) {
+      // ==============================
+      //   INCREMENT BADGE (🔥)
+      // ==============================
+      homeC.increment();
+
+      final notif = message.notification;
+      final android = notif?.android;
+
+      if (notif != null && android != null) {
+        flutterLocalNotificationsPlugin.show(
+          notif.hashCode,
+          notif.title,
+          notif.body,
+          const NotificationDetails(
+            android: AndroidNotificationDetails(
+              'high_importance_channel',
+              'High Importance Notifications',
+              importance: Importance.high,
+              priority: Priority.high,
+              playSound: true,
+              sound: RawResourceAndroidNotificationSound('notif'),
+            ),
+          ),
+        );
+      }
+    });
+  }
+
+  @override
+  Widget build(BuildContext context) {
+    return GetMaterialApp(
+      debugShowCheckedModeBanner: false,
+      title: 'QBSC',
+      initialRoute: '/splash',
+      getPages: [
+        GetPage(name: '/splash', page: () => const SplashView()),
+        GetPage(name: '/login', page: () => const LoginView()),
+        GetPage(name: '/home', page: () => HomeView()),
+        GetPage(name: '/pengaturan', page: () => Pengaturan()),
+        GetPage(name: '/darurat', page: () => Emgergency()),
+        GetPage(name: '/notifikasi', page: () => Notif()),
+        GetPage(name: '/pengaturan/profile', page: () => ProfilePage()),
+        GetPage(name: '/pengaturan/password', page: () => ChangePassword()),
+      ],
+    );
+  }
+}

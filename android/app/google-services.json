@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "1019211117686",
+    "project_id": "qbsc-bos",
+    "storage_bucket": "qbsc-bos.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1019211117686:android:c4dbd10096f06152dd9b57",
+        "android_client_info": {
+          "package_name": "com.qbsc.admin"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyAIqHcZQjJ-yK0CdFMsFVVkiQs6aF-yGZU"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}
