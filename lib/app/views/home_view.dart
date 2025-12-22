@@ -89,6 +89,8 @@ class _HomeViewState extends State<HomeView> {
   void _onMenuTap(String label) {
     if (label == 'Monitoring Absensi') {
       Get.toNamed('/absensi');
+    } else if (label == 'Monitoring Patroli') {
+      Get.toNamed('/patroli');
     }
   }
 

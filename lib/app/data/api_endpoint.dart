@@ -6,6 +6,9 @@ class ApiEndpoint {
   static const String absensi = "$apiPrefix/absensi";
   static const String satpamList = "$apiPrefix/satpam";
 
+  static const String patroli = "$apiPrefix/patroli";
+  static const String locationList = "$apiPrefix/lokasi";
+
   static const String absenActive = '/absen_active';
   static const String locationData = '/location_data';
   static const String getDataLocation = '/get_data_location';

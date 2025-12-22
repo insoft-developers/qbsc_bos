@@ -3,16 +3,19 @@ import 'package:qbsc_saas/app/data/api_endpoint.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/utils/snackbar_helper.dart';
-import 'package:qbsc_saas/app/views/absensi/absensi_model.dart';
 import 'package:qbsc_saas/app/views/absensi/satpam_model.dart';
+import 'package:qbsc_saas/app/views/patroli/lokasi_model.dart';
+import 'package:qbsc_saas/app/views/patroli/patroli_model.dart';
 import 'package:url_launcher/url_launcher.dart';
 
-class AbsensiController extends GetxController {
+class PatroliController extends GetxController {
   var isLoading = false.obs;
-  var absensiList = <AbsensiModel>[].obs;
+  var patroliList = <PatroliModel>[].obs;
   var satpamList = <SatpamModel>[].obs;
+  var lokasiList = <LokasiModel>[].obs;
   var isMoreDataAvailable = true.obs;
   var selectedSatpamId = RxnInt();
+  var selectedLocationId = RxnInt();
 
   final ApiProvider api = Get.find<ApiProvider>();
 
@@ -25,13 +28,14 @@ class AbsensiController extends GetxController {
   var startDate = Rxn<String>(); // yyyy-MM-dd
   var endDate = Rxn<String>(); // yyyy-MM-dd
   var namaSatpam = Rxn<String>();
-  var status = Rxn<String>(); // '1' masuk, '2' pulang
+  var namaLokasi = Rxn<String>();
 
   @override
   void onInit() {
     super.onInit();
     fetchSatpam();
-    getDataAbsensi();
+    fetchLokasi();
+    fetchPatroli();
   }
 
   // =========================
@@ -41,19 +45,19 @@ class AbsensiController extends GetxController {
     String? start,
     String? end,
     int? satpamId,
-    String? statusValue,
+    int? locationId,
   }) {
     selectedSatpamId.value = satpamId;
-    status.value = statusValue;
+    selectedLocationId.value = locationId;
     startDate.value = start;
     endDate.value = end;
 
     // 🔥 RESET PAGINATION
     _page = 1;
-    absensiList.clear();
+    patroliList.clear();
     isMoreDataAvailable.value = true;
 
-    getDataAbsensi();
+    fetchPatroli();
   }
 
   // =========================
@@ -63,29 +67,34 @@ class AbsensiController extends GetxController {
     startDate.value = null;
     endDate.value = null;
     selectedSatpamId.value = null; // ✅ GANTI INI
-    status.value = null;
+    selectedLocationId.value = null;
 
     _page = 1;
-    absensiList.clear();
+    patroliList.clear();
     isMoreDataAvailable.value = true;
 
-    getDataAbsensi();
+    fetchPatroli();
   }
 
   void onChangeSatpam(int? id) {
     selectedSatpamId.value = id;
-    getDataAbsensi(); // reload
+    fetchPatroli(); // reload
+  }
+
+  void onChangeLocation(int? id) {
+    selectedLocationId.value = id;
+    fetchPatroli(); // reload
   }
 
   // =========================
   // FETCH DATA
   // =========================
-  Future<void> getDataAbsensi({bool loadMore = false}) async {
+  Future<void> fetchPatroli({bool loadMore = false}) async {
     if (isLoading.value) return;
 
     if (!loadMore) {
       _page = 1;
-      absensiList.clear();
+      patroliList.clear();
       isMoreDataAvailable.value = true;
     }
 
@@ -96,7 +105,7 @@ class AbsensiController extends GetxController {
 
     try {
       final response = await api.post(
-        ApiEndpoint.absensi,
+        ApiEndpoint.patroli,
         data: {
           'comid': comid,
           'page': _page,
@@ -105,7 +114,8 @@ class AbsensiController extends GetxController {
           // 🔍 FILTER PARAM
           if (startDate.value != null) 'start_date': startDate.value,
           if (endDate.value != null) 'end_date': endDate.value,
-          if (status.value != null) 'status': status.value,
+          if (selectedLocationId.value != null)
+            'location_id': selectedLocationId.value,
           if (selectedSatpamId.value != null)
             'satpam_id': selectedSatpamId.value,
         },
@@ -121,10 +131,10 @@ class AbsensiController extends GetxController {
         final int lastPage = pagination['last_page'];
 
         final fetchedData = listData
-            .map((json) => AbsensiModel.fromJson(json))
+            .map((json) => PatroliModel.fromJson(json))
             .toList();
 
-        absensiList.addAll(fetchedData);
+        patroliList.addAll(fetchedData);
 
         // 🔥 STOP INFINITE SCROLL
         if (currentPage >= lastPage) {
@@ -154,6 +164,21 @@ class AbsensiController extends GetxController {
     }
   }
 
+  Future<void> fetchLokasi() async {
+    int comid = int.parse(AppPrefs.getComId() ?? '0');
+
+    final res = await api.post(
+      ApiEndpoint.locationList,
+      data: {'comid': comid},
+    );
+
+    if (res.data['success']) {
+      lokasiList.value = (res.data['data'] as List)
+          .map((e) => LokasiModel.fromJson(e))
+          .toList();
+    }
+  }
+
   Future<void> openGoogleMaps(double lat, double lng) async {
     final Uri url = Uri.parse('https://www.google.com/maps/@$lat,$lng,20z');
 
@@ -164,9 +189,9 @@ class AbsensiController extends GetxController {
 
   void refreshData() {
     _page = 1;
-    absensiList.clear();
+    patroliList.clear();
     isMoreDataAvailable.value = true;
 
-    getDataAbsensi();
+    fetchPatroli();
   }
 }

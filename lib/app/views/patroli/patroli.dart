@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/absensi/absensi_controller.dart';
-import 'package:qbsc_saas/app/views/absensi/absensi_detail.dart';
-import 'package:qbsc_saas/app/views/absensi/absensi_model.dart';
+import 'package:qbsc_saas/app/views/patroli/patroli_controller.dart';
+import 'package:qbsc_saas/app/views/patroli/patroli_model.dart';
 
-class Absensi extends StatefulWidget {
-  const Absensi({super.key});
+class Patroli extends StatefulWidget {
+  const Patroli({super.key});
 
   @override
-  State<Absensi> createState() => _AbsensiState();
+  State<Patroli> createState() => _PatroliState();
 }
 
-class _AbsensiState extends State<Absensi> {
-  final AbsensiController controller = Get.put(AbsensiController());
+class _PatroliState extends State<Patroli> {
+  final PatroliController controller = Get.put(PatroliController());
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -27,7 +26,7 @@ class _AbsensiState extends State<Absensi> {
             scrollController.position.maxScrollExtent - 200 &&
         controller.isMoreDataAvailable.value &&
         !controller.isLoading.value) {
-      controller.getDataAbsensi(loadMore: true);
+      controller.fetchPatroli(loadMore: true);
     }
   }
 
@@ -42,7 +41,7 @@ class _AbsensiState extends State<Absensi> {
   // =========================
   void _showFilterBottomSheet() {
     int? selectedSatpamId = controller.selectedSatpamId.value;
-    String? selectedStatus = controller.status.value;
+    int? selectedLocationId = controller.selectedLocationId.value;
     DateTime? startDate;
     DateTime? endDate;
 
@@ -67,7 +66,7 @@ class _AbsensiState extends State<Absensi> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Filter Absensi',
+                    'Filter Patroli',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -156,24 +155,33 @@ class _AbsensiState extends State<Absensi> {
 
                   const SizedBox(height: 12),
 
-                  // ===== FILTER STATUS =====
-                  DropdownButtonFormField<String>(
-                    value: selectedStatus,
-                    decoration: const InputDecoration(
-                      labelText: 'Status',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: '1', child: Text('Masuk')),
-                      DropdownMenuItem(value: '2', child: Text('Pulang')),
-                    ],
-                    onChanged: (val) {
-                      setState(() => selectedStatus = val);
-                    },
-                  ),
+                  // ===== FILTER SATPAM (DROPDOWN DB) =====
+                  Obx(() {
+                    return DropdownButtonFormField<int>(
+                      value: selectedLocationId,
+                      decoration: const InputDecoration(
+                        labelText: 'Lokasi',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem<int>(
+                          value: null,
+                          child: Text('Semua Lokasi'),
+                        ),
+                        ...controller.lokasiList.map(
+                          (s) => DropdownMenuItem<int>(
+                            value: s.id,
+                            child: Text(s.locationName),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        setState(() => selectedLocationId = val);
+                      },
+                    );
+                  }),
 
-                  const SizedBox(height: 20),
-
+                  const SizedBox(height: 12),
                   // ===== ACTION =====
                   Row(
                     children: [
@@ -197,7 +205,7 @@ class _AbsensiState extends State<Absensi> {
                               ),
                               end: endDate?.toIso8601String().substring(0, 10),
                               satpamId: selectedSatpamId,
-                              statusValue: selectedStatus,
+                              locationId: selectedLocationId,
                             );
                             Navigator.pop(context);
                           },
@@ -224,7 +232,7 @@ class _AbsensiState extends State<Absensi> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
         title: const Text(
-          'Monitoring Absensi',
+          'Monitoring Patroli',
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -246,12 +254,12 @@ class _AbsensiState extends State<Absensi> {
       backgroundColor: Colors.white,
       body: Obx(() {
         // 1️⃣ Loading pertama kali
-        if (controller.isLoading.value && controller.absensiList.isEmpty) {
+        if (controller.isLoading.value && controller.patroliList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
         // 2️⃣ Data kosong (hasil filter tidak ada)
-        if (!controller.isLoading.value && controller.absensiList.isEmpty) {
+        if (!controller.isLoading.value && controller.patroliList.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -259,7 +267,7 @@ class _AbsensiState extends State<Absensi> {
                 Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 12),
                 Text(
-                  'Data absensi tidak ditemukan',
+                  'Data patroli tidak ditemukan',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -281,20 +289,16 @@ class _AbsensiState extends State<Absensi> {
           controller: scrollController,
           padding: const EdgeInsets.all(16),
           itemCount:
-              controller.absensiList.length +
+              controller.patroliList.length +
               (controller.isMoreDataAvailable.value ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index < controller.absensiList.length) {
-              final AbsensiModel absensi = controller.absensiList[index];
-
-              String catatanStatus = absensi.status == 1
-                  ? "Masuk - ${absensi.catatanMasuk ?? ''}"
-                  : "Pulang - ${absensi.catatanMasuk ?? ''} - ${absensi.catatanKeluar ?? ''}";
+            if (index < controller.patroliList.length) {
+              final PatroliModel patroli = controller.patroliList[index];
 
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  Get.to(() => AbsensiDetail(data: absensi));
+                  // Get.to(() => patroliDetail(data: patroli));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -304,14 +308,14 @@ class _AbsensiState extends State<Absensi> {
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
                         _buildRow(
-                          "Tanggal / Satpam",
-                          "${Fungsi.tanggalIndo(absensi.tanggal)} - ${absensi.namaSatpam}",
+                          "Tanggal / Jam",
+                          "${Fungsi.tanggalIndo(patroli.tanggal)} - ${patroli.jam}",
                         ),
                         _buildRow(
-                          "Jam Masuk / Pulang",
-                          "${Fungsi.formatToTime(absensi.jamMasuk)} - ${Fungsi.formatToTime(absensi.jamKeluar ?? '')}",
+                          "Lokasi/Satpam",
+                          "${patroli.locationName} - ${patroli.satpamName}",
                         ),
-                        _buildRow("Catatan", catatanStatus),
+                        _buildRow("Catatan", patroli.note ?? ''),
                       ],
                     ),
                   ),

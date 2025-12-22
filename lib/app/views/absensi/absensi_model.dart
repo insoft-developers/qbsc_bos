@@ -18,6 +18,7 @@ class AbsensiModel {
   final int comid;
   final String namaPerusahaan;
   final String createdAt;
+  final String? fotoSatpam;
 
   AbsensiModel({
     required this.id,
@@ -39,6 +40,7 @@ class AbsensiModel {
     required this.comid,
     required this.namaPerusahaan,
     required this.createdAt,
+    this.fotoSatpam,
   });
 
   // Parsing dari JSON
@@ -63,6 +65,7 @@ class AbsensiModel {
       comid: json['comid'],
       namaPerusahaan: json['company']['company_name'] ?? '',
       createdAt: json['created_at'],
+      fotoSatpam: json['satpam']['face_photo_path'] ?? '',
     );
   }
 
