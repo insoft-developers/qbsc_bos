@@ -1,6 +1,5 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qbsc_saas/app/controllers/absen_controller.dart';
 import 'package:qbsc_saas/app/controllers/auth_controller.dart';
 
 class SplashView extends StatefulWidget {
@@ -13,7 +12,6 @@ class SplashView extends StatefulWidget {
 class _SplashViewState extends State<SplashView>
     with SingleTickerProviderStateMixin {
   final AuthController auth = Get.put(AuthController());
-  final AbsenController absenController = Get.put(AbsenController());
 
   late AnimationController _controller;
   late Animation<double> _animation;

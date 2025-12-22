@@ -11,6 +11,7 @@ import 'package:qbsc_saas/app/controllers/auth_controller.dart'; // 🔥 DITAMBA
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/utils/firebase_background_handler.dart';
 import 'package:qbsc_saas/app/utils/topic_service.dart';
+import 'package:qbsc_saas/app/views/absensi/absensi.dart';
 
 import 'package:qbsc_saas/app/views/emergency/emgergency.dart';
 import 'package:qbsc_saas/app/views/home_view.dart';
@@ -125,6 +126,7 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/splash', page: () => const SplashView()),
         GetPage(name: '/login', page: () => const LoginView()),
         GetPage(name: '/home', page: () => HomeView()),
+        GetPage(name: '/absensi', page: () => Absensi()),
         GetPage(name: '/pengaturan', page: () => Pengaturan()),
         GetPage(name: '/darurat', page: () => Emgergency()),
         GetPage(name: '/notifikasi', page: () => Notif()),

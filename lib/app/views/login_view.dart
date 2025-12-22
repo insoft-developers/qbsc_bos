@@ -30,92 +30,60 @@ class _LoginViewState extends State<LoginView> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      resizeToAvoidBottomInset: true,
+      backgroundColor: Colors.black,
       body: SafeArea(
-        child: Container(
-          width: double.infinity,
-          height: double.infinity,
-          decoration: const BoxDecoration(
-            gradient: LinearGradient(
-              colors: [Colors.black, Colors.black],
-              begin: Alignment.topLeft,
-              end: Alignment.bottomRight,
-            ),
-          ),
+        child: Center(
           child: SingleChildScrollView(
-            padding: EdgeInsets.only(
-              top: isTablet ? 100 : 60,
-              left: 30,
-              right: 30,
-              bottom: MediaQuery.of(context).viewInsets.bottom + 30,
+            padding: EdgeInsets.symmetric(
+              horizontal: isTablet ? 60 : 30,
+              vertical: 50,
             ),
-            child: Center(
-              child: Column(
-                mainAxisAlignment: MainAxisAlignment.center,
-                children: [
-                  // 🧩 Logo
-                  Image.asset(
-                    "assets/images/qbsc_bos.png",
+            child: Column(
+              mainAxisAlignment: MainAxisAlignment.center,
+              children: [
+                // Logo
+                Image.asset(
+                  "assets/images/qbsc_bos.png",
+                  width: isTablet ? 200 : 150,
+                  colorBlendMode: BlendMode.srcIn,
+                ),
+                const SizedBox(height: 40),
 
-                    colorBlendMode: BlendMode.srcIn,
-                    width: isTablet ? 220 : 180,
+                // Judul
+                Text(
+                  'QBSC Login',
+                  style: TextStyle(
+                    color: Colors.white,
+                    fontSize: isTablet ? 28 : 22,
+                    fontWeight: FontWeight.bold,
                   ),
+                ),
+                const SizedBox(height: 40),
 
-                  // 🏷️ Judul
-                  const SizedBox(height: 40),
+                // Email
+                _buildTextField(
+                  controller: emailController,
+                  hint: 'Email',
+                  icon: Icons.email,
+                  keyboardType: TextInputType.emailAddress,
+                ),
+                const SizedBox(height: 25),
 
-                  // 📱 Nomor WA
-                  TextField(
-                    keyboardType: TextInputType.emailAddress,
-                    controller: emailController,
-                    textInputAction: TextInputAction.next,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Email',
-                      hintStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: isTablet ? 18 : 14,
-                      ),
-                      enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white38),
-                      ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                      prefixIcon: const Icon(
-                        Icons.email,
-                        color: Colors.white70,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 25),
+                // Password
+                _buildTextField(
+                  controller: passwordController,
+                  hint: 'Password',
+                  icon: Icons.lock,
+                  obscureText: true,
+                ),
+                const SizedBox(height: 40),
 
-                  // 🔒 Password
-                  TextField(
-                    controller: passwordController,
-                    obscureText: true,
-                    textInputAction: TextInputAction.done,
-                    style: const TextStyle(color: Colors.white),
-                    decoration: InputDecoration(
-                      hintText: 'Password',
-                      hintStyle: TextStyle(
-                        color: Colors.white.withOpacity(0.7),
-                        fontSize: isTablet ? 18 : 14,
-                      ),
-                      enabledBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white38),
-                      ),
-                      focusedBorder: const UnderlineInputBorder(
-                        borderSide: BorderSide(color: Colors.white),
-                      ),
-                      prefixIcon: const Icon(Icons.lock, color: Colors.white70),
-                    ),
-                  ),
-                  const SizedBox(height: 40),
-
-                  // 🔘 Tombol Login
-                  Obx(() {
-                    return ElevatedButton(
+                // Tombol Login
+                Obx(() {
+                  return SizedBox(
+                    width: double.infinity,
+                    height: 55,
+                    child: ElevatedButton(
                       onPressed: auth.isLoading.value
                           ? null
                           : () async {
@@ -127,55 +95,85 @@ class _LoginViewState extends State<LoginView> {
                       style: ElevatedButton.styleFrom(
                         backgroundColor: Colors.white,
                         foregroundColor: Colors.black,
-                        minimumSize: const Size(double.infinity, 50),
                         shape: RoundedRectangleBorder(
-                          borderRadius: BorderRadius.circular(10),
+                          borderRadius: BorderRadius.circular(12),
+                        ),
+                        textStyle: TextStyle(
+                          fontSize: isTablet ? 20 : 18,
+                          fontWeight: FontWeight.bold,
                         ),
                       ),
                       child: auth.isLoading.value
                           ? const CircularProgressIndicator(color: Colors.black)
-                          : Text(
-                              'Login',
-                              style: TextStyle(
-                                fontSize: isTablet ? 20 : 18,
-                                fontWeight: FontWeight.bold,
-                              ),
-                            ),
-                    );
-                  }),
-                  const SizedBox(height: 20),
+                          : const Text('Login'),
+                    ),
+                  );
+                }),
+                const SizedBox(height: 20),
 
-                  // 🔗 Lupa password
-                  TextButton(
-                    onPressed: () {
-                      Get.snackbar(
-                        'Info',
-                        'Silahkan hub administrator anda untuk minta reset password',
-                        backgroundColor: Colors.red,
-                        colorText: Colors.white,
-                        snackPosition: SnackPosition.BOTTOM,
-                      );
-                    },
-                    child: Text(
-                      "Lupa password?",
-                      style: TextStyle(
-                        color: Colors.white.withOpacity(0.8),
-                        fontSize: isTablet ? 16 : 14,
-                      ),
-                    ),
-                  ),
-                  const SizedBox(height: 20),
-                  Text(
-                    "Versi ${ApiProvider.appVersion}",
+                // Lupa password
+                TextButton(
+                  onPressed: () {
+                    Get.snackbar(
+                      'Info',
+                      'Silahkan hub administrator anda untuk minta reset password',
+                      backgroundColor: Colors.red,
+                      colorText: Colors.white,
+                      snackPosition: SnackPosition.BOTTOM,
+                    );
+                  },
+                  child: Text(
+                    "Lupa password?",
                     style: TextStyle(
-                      color: Colors.white,
-                      fontWeight: FontWeight.bold,
+                      color: Colors.white70,
+                      fontSize: isTablet ? 16 : 14,
                     ),
                   ),
-                ],
-              ),
+                ),
+
+                const SizedBox(height: 30),
+
+                // Versi App
+                Text(
+                  "Versi ${ApiProvider.appVersion}",
+                  style: const TextStyle(
+                    color: Colors.white54,
+                    fontWeight: FontWeight.w500,
+                  ),
+                ),
+              ],
             ),
           ),
+        ),
+      ),
+    );
+  }
+
+  Widget _buildTextField({
+    required TextEditingController controller,
+    required String hint,
+    required IconData icon,
+    bool obscureText = false,
+    TextInputType keyboardType = TextInputType.text,
+  }) {
+    return TextField(
+      controller: controller,
+      obscureText: obscureText,
+      keyboardType: keyboardType,
+      style: const TextStyle(color: Colors.white),
+      decoration: InputDecoration(
+        hintText: hint,
+        hintStyle: const TextStyle(color: Colors.white70),
+        prefixIcon: Icon(icon, color: Colors.white70),
+        filled: true,
+        fillColor: Colors.white12,
+        border: OutlineInputBorder(
+          borderRadius: BorderRadius.circular(12),
+          borderSide: BorderSide.none,
+        ),
+        contentPadding: const EdgeInsets.symmetric(
+          vertical: 18,
+          horizontal: 20,
         ),
       ),
     );

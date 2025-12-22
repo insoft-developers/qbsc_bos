@@ -36,7 +36,7 @@ class AuthController extends GetxController {
 
       token.value = response.data['token'] ?? '';
       userName.value = response.data['data']['name'] ?? 'Unknown';
-      userPhoto.value = response.data['data']['profile_image'];
+      userPhoto.value = response.data['data']['profile_image'] ?? '';
       userId.value = response.data['data']['id'].toString();
       comId.value = response.data['data']['company_id'].toString();
       companyName.value = response.data['data']['company']['company_name']
@@ -61,7 +61,7 @@ class AuthController extends GetxController {
         _showSnackbar('Berhasil', 'Login sukses!');
       });
     } catch (e) {
-      _showSnackbar('Error', 'Login gagal');
+      _showSnackbar('Error', 'Login Gagal');
     } finally {
       isLoading(false);
     }
