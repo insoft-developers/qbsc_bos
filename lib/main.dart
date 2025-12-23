@@ -15,6 +15,8 @@ import 'package:qbsc_saas/app/views/absensi/absensi.dart';
 
 import 'package:qbsc_saas/app/views/emergency/emgergency.dart';
 import 'package:qbsc_saas/app/views/home_view.dart';
+import 'package:qbsc_saas/app/views/kandang/kandang_tab_page.dart';
+import 'package:qbsc_saas/app/views/kandang/suhu/kandang_suhu.dart';
 import 'package:qbsc_saas/app/views/login_view.dart';
 import 'package:qbsc_saas/app/views/notif/notif.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli.dart';
@@ -120,7 +122,7 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
-      debugShowCheckedModeBanner: false,
+      debugShowCheckedModeBanner: ApiProvider.isDev ? true : false,
       title: 'QBSC',
       initialRoute: '/splash',
       getPages: [
@@ -129,6 +131,7 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/home', page: () => HomeView()),
         GetPage(name: '/absensi', page: () => Absensi()),
         GetPage(name: '/patroli', page: () => Patroli()),
+        GetPage(name: '/kandang', page: () => KandangTabPage()),
         GetPage(name: '/pengaturan', page: () => Pengaturan()),
         GetPage(name: '/darurat', page: () => Emgergency()),
         GetPage(name: '/notifikasi', page: () => Notif()),

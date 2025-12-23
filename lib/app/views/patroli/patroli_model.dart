@@ -19,6 +19,7 @@ class PatroliModel {
 
   final int comid;
   final String companyName;
+  final String createdAt;
 
   PatroliModel({
     required this.id,
@@ -36,6 +37,7 @@ class PatroliModel {
     this.foto,
     required this.comid,
     required this.companyName,
+    required this.createdAt,
   });
 
   /// =========================
@@ -58,6 +60,7 @@ class PatroliModel {
       foto: json['photo_path'] ?? '',
       comid: json['comid'],
       companyName: json['company']['company_name'] ?? '',
+      createdAt: json['created_at'],
     );
   }
 }

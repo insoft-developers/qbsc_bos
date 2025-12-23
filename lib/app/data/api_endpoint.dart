@@ -8,6 +8,11 @@ class ApiEndpoint {
 
   static const String patroli = "$apiPrefix/patroli";
   static const String locationList = "$apiPrefix/lokasi";
+  static const String kandangList = "$apiPrefix/kandang";
+  static const String kandangSuhu = "$apiPrefix/kandang_suhu";
+  static const String kandangKipas = "$apiPrefix/kandang_kipas";
+  static const String kandangAlarm = "$apiPrefix/kandang_alarm";
+  static const String kandangLampu = "$apiPrefix/kandang_lampu";
 
   static const String absenActive = '/absen_active';
   static const String locationData = '/location_data';

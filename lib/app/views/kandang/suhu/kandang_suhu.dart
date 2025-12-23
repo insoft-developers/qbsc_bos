@@ -1,19 +1,18 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/patroli/patroli_controller.dart';
-import 'package:qbsc_saas/app/views/patroli/patroli_detail.dart';
-import 'package:qbsc_saas/app/views/patroli/patroli_model.dart';
+import 'package:qbsc_saas/app/views/kandang/suhu/suhu_controller.dart';
+import 'package:qbsc_saas/app/views/kandang/suhu/suhu_model.dart';
 
-class Patroli extends StatefulWidget {
-  const Patroli({super.key});
+class KandangSuhu extends StatefulWidget {
+  const KandangSuhu({super.key});
 
   @override
-  State<Patroli> createState() => _PatroliState();
+  State<KandangSuhu> createState() => _KandangSuhuState();
 }
 
-class _PatroliState extends State<Patroli> {
-  final PatroliController controller = Get.put(PatroliController());
+class _KandangSuhuState extends State<KandangSuhu> {
+  final SuhuController controller = Get.put(SuhuController());
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -27,7 +26,7 @@ class _PatroliState extends State<Patroli> {
             scrollController.position.maxScrollExtent - 200 &&
         controller.isMoreDataAvailable.value &&
         !controller.isLoading.value) {
-      controller.fetchPatroli(loadMore: true);
+      controller.fetchSuhu(loadMore: true);
     }
   }
 
@@ -42,7 +41,7 @@ class _PatroliState extends State<Patroli> {
   // =========================
   void _showFilterBottomSheet() {
     int? selectedSatpamId = controller.selectedSatpamId.value;
-    int? selectedLocationId = controller.selectedLocationId.value;
+    int? selectedKandangId = controller.selectedKandangId.value;
     DateTime? startDate;
     DateTime? endDate;
 
@@ -67,7 +66,7 @@ class _PatroliState extends State<Patroli> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Filter Patroli',
+                    'Filter Kandang',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -159,25 +158,25 @@ class _PatroliState extends State<Patroli> {
                   // ===== FILTER SATPAM (DROPDOWN DB) =====
                   Obx(() {
                     return DropdownButtonFormField<int>(
-                      value: selectedLocationId,
+                      value: selectedKandangId,
                       decoration: const InputDecoration(
-                        labelText: 'Lokasi',
+                        labelText: 'Kandang',
                         border: OutlineInputBorder(),
                       ),
                       items: [
                         const DropdownMenuItem<int>(
                           value: null,
-                          child: Text('Semua Lokasi'),
+                          child: Text('Semua Kandang'),
                         ),
-                        ...controller.lokasiList.map(
+                        ...controller.kandangList.map(
                           (s) => DropdownMenuItem<int>(
                             value: s.id,
-                            child: Text(s.locationName),
+                            child: Text(s.name),
                           ),
                         ),
                       ],
                       onChanged: (val) {
-                        setState(() => selectedLocationId = val);
+                        setState(() => selectedKandangId = val);
                       },
                     );
                   }),
@@ -206,7 +205,7 @@ class _PatroliState extends State<Patroli> {
                               ),
                               end: endDate?.toIso8601String().substring(0, 10),
                               satpamId: selectedSatpamId,
-                              locationId: selectedLocationId,
+                              kandangId: selectedKandangId,
                             );
                             Navigator.pop(context);
                           },
@@ -230,37 +229,36 @@ class _PatroliState extends State<Patroli> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(
-        backgroundColor: const Color(0xFF0F172A),
-        title: const Text(
-          'Monitoring Patroli',
-          style: TextStyle(color: Colors.white),
-        ),
-        iconTheme: const IconThemeData(color: Colors.white),
-        actions: [
-          IconButton(
-            icon: const Icon(Icons.filter_alt_outlined),
-            onPressed: _showFilterBottomSheet,
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            backgroundColor: Colors.black,
+            child: const Icon(Icons.filter_alt_outlined, color: Colors.white),
+            onPressed: () {
+              _showFilterBottomSheet();
+            },
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: () {
+              controller.refreshData();
+            },
           ),
         ],
-      ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.refresh, color: Colors.white),
-        onPressed: () {
-          controller.refreshData();
-        },
       ),
 
       backgroundColor: Colors.white,
       body: Obx(() {
         // 1️⃣ Loading pertama kali
-        if (controller.isLoading.value && controller.patroliList.isEmpty) {
+        if (controller.isLoading.value && controller.suhuList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
         // 2️⃣ Data kosong (hasil filter tidak ada)
-        if (!controller.isLoading.value && controller.patroliList.isEmpty) {
+        if (!controller.isLoading.value && controller.suhuList.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -268,7 +266,7 @@ class _PatroliState extends State<Patroli> {
                 Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 12),
                 Text(
-                  'Data patroli tidak ditemukan',
+                  'Data Suhu tidak ditemukan',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -290,16 +288,16 @@ class _PatroliState extends State<Patroli> {
           controller: scrollController,
           padding: const EdgeInsets.all(16),
           itemCount:
-              controller.patroliList.length +
+              controller.suhuList.length +
               (controller.isMoreDataAvailable.value ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index < controller.patroliList.length) {
-              final PatroliModel patroli = controller.patroliList[index];
+            if (index < controller.suhuList.length) {
+              final SuhuModel suhuData = controller.suhuList[index];
 
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  Get.to(() => PatroliDetail(data: patroli));
+                  // Get.to(() => KandangDetail(data: Kandang));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -310,13 +308,17 @@ class _PatroliState extends State<Patroli> {
                       children: [
                         _buildRow(
                           "Tanggal / Jam",
-                          "${Fungsi.tanggalIndo(patroli.tanggal)} - ${patroli.jam}",
+                          "${Fungsi.tanggalIndo(suhuData.tanggal)} - ${suhuData.jam}",
                         ),
                         _buildRow(
-                          "Lokasi/Satpam",
-                          "${patroli.locationName} - ${patroli.satpamName}",
+                          "Kandang/Satpam",
+                          "${suhuData.kandangName} - ${suhuData.satpamName}",
                         ),
-                        _buildRow("Catatan", patroli.note ?? ''),
+                        _buildRow(
+                          "Suhu",
+                          "${suhuData.temperature.toString()} C",
+                        ),
+                        _buildRow("Catatan", suhuData.note ?? ''),
                       ],
                     ),
                   ),
