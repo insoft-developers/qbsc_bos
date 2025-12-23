@@ -1,8 +1,8 @@
 import 'package:flutter/material.dart';
-import 'package:qbsc_saas/app/views/kandang/alarm/kandang_alarm.dart';
-import 'package:qbsc_saas/app/views/kandang/kipas/kandang_kipas.dart';
-import 'package:qbsc_saas/app/views/kandang/lampu/kandang_lampu.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/kandang_suhu.dart';
+import 'package:qbsc_saas/app/views/kandang/alarm/alarm.dart';
+import 'package:qbsc_saas/app/views/kandang/kipas/kipas.dart';
+import 'package:qbsc_saas/app/views/kandang/lampu/lampu.dart';
+import 'package:qbsc_saas/app/views/kandang/suhu/suhu.dart';
 
 class KandangTabPage extends StatelessWidget {
   const KandangTabPage({super.key});

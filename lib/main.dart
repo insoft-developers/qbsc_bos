@@ -16,7 +16,7 @@ import 'package:qbsc_saas/app/views/absensi/absensi.dart';
 import 'package:qbsc_saas/app/views/emergency/emgergency.dart';
 import 'package:qbsc_saas/app/views/home_view.dart';
 import 'package:qbsc_saas/app/views/kandang/kandang_tab_page.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/kandang_suhu.dart';
+import 'package:qbsc_saas/app/views/kandang/suhu/suhu.dart';
 import 'package:qbsc_saas/app/views/login_view.dart';
 import 'package:qbsc_saas/app/views/notif/notif.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli.dart';
