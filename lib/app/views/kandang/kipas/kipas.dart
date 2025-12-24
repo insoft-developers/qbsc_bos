@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/kandang/kipas/kipas_controller.dart';
+import 'package:qbsc_saas/app/views/kandang/kipas/kipas_detail.dart';
 import 'package:qbsc_saas/app/views/kandang/kipas/kipas_model.dart';
 import 'package:qbsc_saas/app/views/kandang/suhu/suhu_model.dart';
 
@@ -302,7 +303,7 @@ class _KandangKipasState extends State<KandangKipas> {
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  // Get.to(() => KandangDetail(data: Kandang));
+                  Get.to(() => KipasDetail(data: kipasData));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -381,7 +382,7 @@ class _KandangKipasState extends State<KandangKipas> {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: kipasList.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 3,
+        crossAxisCount: 4,
         mainAxisSpacing: 12,
         crossAxisSpacing: 12,
         childAspectRatio: 1,
@@ -400,12 +401,6 @@ class _KandangKipasState extends State<KandangKipas> {
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
-              FanIcon(
-                isOn: isOn,
-                size: 32,
-                color: isOn ? Colors.green : Colors.grey,
-              ),
-              const SizedBox(height: 6),
               Text(
                 'Kipas ${index + 1}',
                 style: const TextStyle(
@@ -451,69 +446,6 @@ class _KandangKipasState extends State<KandangKipas> {
           // ===== CONTENT =====
           ...children,
         ],
-      ),
-    );
-  }
-}
-
-class FanIcon extends StatefulWidget {
-  final bool isOn;
-  final double size;
-  final Color color;
-
-  const FanIcon({
-    super.key,
-    required this.isOn,
-    this.size = 22,
-    required this.color,
-  });
-
-  @override
-  State<FanIcon> createState() => _FanIconState();
-}
-
-class _FanIconState extends State<FanIcon> with SingleTickerProviderStateMixin {
-  late AnimationController _controller;
-
-  @override
-  void initState() {
-    super.initState();
-
-    _controller = AnimationController(
-      vsync: this,
-      duration: const Duration(seconds: 1),
-    );
-
-    if (widget.isOn) {
-      _controller.repeat();
-    }
-  }
-
-  @override
-  void didUpdateWidget(covariant FanIcon oldWidget) {
-    super.didUpdateWidget(oldWidget);
-
-    if (widget.isOn && !_controller.isAnimating) {
-      _controller.repeat();
-    } else if (!widget.isOn && _controller.isAnimating) {
-      _controller.stop();
-    }
-  }
-
-  @override
-  void dispose() {
-    _controller.dispose();
-    super.dispose();
-  }
-
-  @override
-  Widget build(BuildContext context) {
-    return RotationTransition(
-      turns: _controller,
-      child: Icon(
-        Icons.wind_power, // icon kipas
-        size: widget.size,
-        color: widget.color,
       ),
     );
   }

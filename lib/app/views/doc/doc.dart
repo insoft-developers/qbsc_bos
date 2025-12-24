@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu_controller.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu_detail.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu_model.dart';
+import 'package:qbsc_saas/app/views/doc/doc_controller.dart';
+import 'package:qbsc_saas/app/views/doc/doc_detail.dart';
+import 'package:qbsc_saas/app/views/doc/doc_model.dart';
 
-class KandangSuhu extends StatefulWidget {
-  const KandangSuhu({super.key});
+class DocPage extends StatefulWidget {
+  const DocPage({super.key});
 
   @override
-  State<KandangSuhu> createState() => _KandangSuhuState();
+  State<DocPage> createState() => _DocPageState();
 }
 
-class _KandangSuhuState extends State<KandangSuhu> {
-  final SuhuController controller = Get.put(SuhuController());
+class _DocPageState extends State<DocPage> {
+  final DocController controller = Get.put(DocController());
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -27,7 +27,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
             scrollController.position.maxScrollExtent - 200 &&
         controller.isMoreDataAvailable.value &&
         !controller.isLoading.value) {
-      controller.fetchSuhu(loadMore: true);
+      controller.fetchDoc(loadMore: true);
     }
   }
 
@@ -42,7 +42,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
   // =========================
   void _showFilterBottomSheet() {
     int? selectedSatpamId = controller.selectedSatpamId.value;
-    int? selectedKandangId = controller.selectedKandangId.value;
+    int? selectedEkspedisiId = controller.selectedEkspedisiId.value;
     DateTime? startDate;
     DateTime? endDate;
 
@@ -67,7 +67,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Filter Kandang',
+                    'Filter Catatan DOC',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -159,17 +159,17 @@ class _KandangSuhuState extends State<KandangSuhu> {
                   // ===== FILTER SATPAM (DROPDOWN DB) =====
                   Obx(() {
                     return DropdownButtonFormField<int>(
-                      value: selectedKandangId,
+                      value: selectedEkspedisiId,
                       decoration: const InputDecoration(
-                        labelText: 'Kandang',
+                        labelText: 'Ekspedisi',
                         border: OutlineInputBorder(),
                       ),
                       items: [
                         const DropdownMenuItem<int>(
                           value: null,
-                          child: Text('Semua Kandang'),
+                          child: Text('Semua Ekspedisi'),
                         ),
-                        ...controller.kandangList.map(
+                        ...controller.ekspedisiList.map(
                           (s) => DropdownMenuItem<int>(
                             value: s.id,
                             child: Text(s.name),
@@ -177,7 +177,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
                         ),
                       ],
                       onChanged: (val) {
-                        setState(() => selectedKandangId = val);
+                        setState(() => selectedEkspedisiId = val);
                       },
                     );
                   }),
@@ -206,7 +206,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
                               ),
                               end: endDate?.toIso8601String().substring(0, 10),
                               satpamId: selectedSatpamId,
-                              kandangId: selectedKandangId,
+                              ekspedisiId: selectedEkspedisiId,
                             );
                             Navigator.pop(context);
                           },
@@ -230,36 +230,37 @@ class _KandangSuhuState extends State<KandangSuhu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            backgroundColor: Colors.black,
-            child: const Icon(Icons.filter_alt_outlined, color: Colors.white),
-            onPressed: () {
-              _showFilterBottomSheet();
-            },
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            backgroundColor: Colors.green,
-            child: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: () {
-              controller.refreshData();
-            },
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0F172A),
+        title: const Text(
+          'Lihat Catatan DOC',
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_alt_outlined),
+            onPressed: _showFilterBottomSheet,
           ),
         ],
+      ),
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.refresh, color: Colors.white),
+        onPressed: () {
+          controller.refreshData();
+        },
       ),
 
       backgroundColor: Colors.white,
       body: Obx(() {
         // 1️⃣ Loading pertama kali
-        if (controller.isLoading.value && controller.suhuList.isEmpty) {
+        if (controller.isLoading.value && controller.docList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
         // 2️⃣ Data kosong (hasil filter tidak ada)
-        if (!controller.isLoading.value && controller.suhuList.isEmpty) {
+        if (!controller.isLoading.value && controller.docList.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -267,7 +268,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
                 Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 12),
                 Text(
-                  'Data Suhu tidak ditemukan',
+                  'Data Doc Keluar tidak ditemukan',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -289,16 +290,18 @@ class _KandangSuhuState extends State<KandangSuhu> {
           controller: scrollController,
           padding: const EdgeInsets.all(16),
           itemCount:
-              controller.suhuList.length +
+              controller.docList.length +
               (controller.isMoreDataAvailable.value ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index < controller.suhuList.length) {
-              final SuhuModel suhuData = controller.suhuList[index];
+            if (index < controller.docList.length) {
+              final DocModel dataShow = controller.docList[index];
+
+              String jenisDoc = dataShow.jenis == 1 ? 'Male' : 'Female';
 
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  Get.to(() => SuhuDetail(data: suhuData));
+                  Get.to(() => DocDetail(data: dataShow));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -309,17 +312,21 @@ class _KandangSuhuState extends State<KandangSuhu> {
                       children: [
                         _buildRow(
                           "Tanggal / Jam",
-                          "${Fungsi.tanggalIndo(suhuData.tanggal)} - ${suhuData.jam}",
+                          "${Fungsi.tanggalIndo(dataShow.tanggal)} - ${dataShow.jam}",
                         ),
                         _buildRow(
-                          "Kandang/Satpam",
-                          "${suhuData.kandangName} - ${suhuData.satpamName}",
+                          "Jumlah Box/Jenis",
+                          "${dataShow.jumlah.toString()} Box - ${jenisDoc}",
                         ),
                         _buildRow(
-                          "Suhu",
-                          "${suhuData.temperature.toString()} C",
+                          "Ekspedisi/Satpam",
+                          "${dataShow.ekspedisiName} - ${dataShow.satpamName}",
                         ),
-                        _buildRow("Catatan", suhuData.note ?? ''),
+                        _buildRow(
+                          "No Polisi/Tujuan",
+                          "${dataShow.noPolisi} - ${dataShow.tujuan}",
+                        ),
+                        _buildRow("Catatan", dataShow.note ?? ''),
                       ],
                     ),
                   ),

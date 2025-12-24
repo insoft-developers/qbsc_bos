@@ -121,6 +121,7 @@ flutter:
     - assets/images/setting.png
     - assets/images/tamu.png    
     - assets/images/qbsc_bos.png
+    - assets/images/broadcast.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

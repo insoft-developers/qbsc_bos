@@ -51,7 +51,7 @@ class _LoginViewState extends State<LoginView> {
 
                 // Judul
                 Text(
-                  'QBSC Login',
+                  'Login',
                   style: TextStyle(
                     color: Colors.white,
                     fontSize: isTablet ? 28 : 22,

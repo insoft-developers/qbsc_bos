@@ -1,19 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu_controller.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu_detail.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu_model.dart';
+import 'package:qbsc_saas/app/views/broadcast/broadcast_add.dart';
+import 'package:qbsc_saas/app/views/broadcast/broadcast_controller.dart';
+import 'package:qbsc_saas/app/views/broadcast/broadcast_model.dart';
 
-class KandangSuhu extends StatefulWidget {
-  const KandangSuhu({super.key});
+class Broadcast extends StatefulWidget {
+  const Broadcast({super.key});
 
   @override
-  State<KandangSuhu> createState() => _KandangSuhuState();
+  State<Broadcast> createState() => _BroadcastState();
 }
 
-class _KandangSuhuState extends State<KandangSuhu> {
-  final SuhuController controller = Get.put(SuhuController());
+class _BroadcastState extends State<Broadcast> {
+  final BroadcastController controller = Get.put(BroadcastController());
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -27,7 +27,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
             scrollController.position.maxScrollExtent - 200 &&
         controller.isMoreDataAvailable.value &&
         !controller.isLoading.value) {
-      controller.fetchSuhu(loadMore: true);
+      controller.fetchBroadcast(loadMore: true);
     }
   }
 
@@ -41,8 +41,6 @@ class _KandangSuhuState extends State<KandangSuhu> {
   // FILTER BOTTOM SHEET
   // =========================
   void _showFilterBottomSheet() {
-    int? selectedSatpamId = controller.selectedSatpamId.value;
-    int? selectedKandangId = controller.selectedKandangId.value;
     DateTime? startDate;
     DateTime? endDate;
 
@@ -67,7 +65,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Filter Kandang',
+                    'Filter Broadcast',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -125,63 +123,6 @@ class _KandangSuhuState extends State<KandangSuhu> {
                       ),
                     ],
                   ),
-
-                  const SizedBox(height: 12),
-
-                  // ===== FILTER SATPAM (DROPDOWN DB) =====
-                  Obx(() {
-                    return DropdownButtonFormField<int>(
-                      value: selectedSatpamId,
-                      decoration: const InputDecoration(
-                        labelText: 'Satpam',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        const DropdownMenuItem<int>(
-                          value: null,
-                          child: Text('Semua Satpam'),
-                        ),
-                        ...controller.satpamList.map(
-                          (s) => DropdownMenuItem<int>(
-                            value: s.id,
-                            child: Text(s.name),
-                          ),
-                        ),
-                      ],
-                      onChanged: (val) {
-                        setState(() => selectedSatpamId = val);
-                      },
-                    );
-                  }),
-
-                  const SizedBox(height: 12),
-
-                  // ===== FILTER SATPAM (DROPDOWN DB) =====
-                  Obx(() {
-                    return DropdownButtonFormField<int>(
-                      value: selectedKandangId,
-                      decoration: const InputDecoration(
-                        labelText: 'Kandang',
-                        border: OutlineInputBorder(),
-                      ),
-                      items: [
-                        const DropdownMenuItem<int>(
-                          value: null,
-                          child: Text('Semua Kandang'),
-                        ),
-                        ...controller.kandangList.map(
-                          (s) => DropdownMenuItem<int>(
-                            value: s.id,
-                            child: Text(s.name),
-                          ),
-                        ),
-                      ],
-                      onChanged: (val) {
-                        setState(() => selectedKandangId = val);
-                      },
-                    );
-                  }),
-
                   const SizedBox(height: 12),
                   // ===== ACTION =====
                   Row(
@@ -205,8 +146,6 @@ class _KandangSuhuState extends State<KandangSuhu> {
                                 10,
                               ),
                               end: endDate?.toIso8601String().substring(0, 10),
-                              satpamId: selectedSatpamId,
-                              kandangId: selectedKandangId,
                             );
                             Navigator.pop(context);
                           },
@@ -230,22 +169,36 @@ class _KandangSuhuState extends State<KandangSuhu> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
+      appBar: AppBar(
+        backgroundColor: const Color(0xFF0F172A),
+        title: const Text(
+          'Buat Broadcast',
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
+        actions: [
+          IconButton(
+            icon: const Icon(Icons.filter_alt_outlined),
+            onPressed: _showFilterBottomSheet,
+          ),
+        ],
+      ),
       floatingActionButton: Column(
         mainAxisAlignment: MainAxisAlignment.end,
         children: [
-          FloatingActionButton(
-            backgroundColor: Colors.black,
-            child: const Icon(Icons.filter_alt_outlined, color: Colors.white),
-            onPressed: () {
-              _showFilterBottomSheet();
-            },
-          ),
-          const SizedBox(height: 10),
           FloatingActionButton(
             backgroundColor: Colors.green,
             child: const Icon(Icons.refresh, color: Colors.white),
             onPressed: () {
               controller.refreshData();
+            },
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            backgroundColor: Colors.blue,
+            child: const Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              Get.to(() => BroadcastAddPage());
             },
           ),
         ],
@@ -254,12 +207,12 @@ class _KandangSuhuState extends State<KandangSuhu> {
       backgroundColor: Colors.white,
       body: Obx(() {
         // 1️⃣ Loading pertama kali
-        if (controller.isLoading.value && controller.suhuList.isEmpty) {
+        if (controller.isLoading.value && controller.broadcastList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
         // 2️⃣ Data kosong (hasil filter tidak ada)
-        if (!controller.isLoading.value && controller.suhuList.isEmpty) {
+        if (!controller.isLoading.value && controller.broadcastList.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -267,7 +220,7 @@ class _KandangSuhuState extends State<KandangSuhu> {
                 Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 12),
                 Text(
-                  'Data Suhu tidak ditemukan',
+                  'Data Broadcast tidak ditemukan',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -289,16 +242,16 @@ class _KandangSuhuState extends State<KandangSuhu> {
           controller: scrollController,
           padding: const EdgeInsets.all(16),
           itemCount:
-              controller.suhuList.length +
+              controller.broadcastList.length +
               (controller.isMoreDataAvailable.value ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index < controller.suhuList.length) {
-              final SuhuModel suhuData = controller.suhuList[index];
+            if (index < controller.broadcastList.length) {
+              final BroadcastModel dataShow = controller.broadcastList[index];
 
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  Get.to(() => SuhuDetail(data: suhuData));
+                  // Get.to(() => DocDetail(data: dataShow));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -307,19 +260,13 @@ class _KandangSuhuState extends State<KandangSuhu> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        _buildRow("Judul", dataShow.judul),
+                        _buildRow("Pesan", limitWords(dataShow.pesan, 15)),
+
                         _buildRow(
-                          "Tanggal / Jam",
-                          "${Fungsi.tanggalIndo(suhuData.tanggal)} - ${suhuData.jam}",
+                          "Tanggal",
+                          Fungsi.formatDateTime(dataShow.createdAt),
                         ),
-                        _buildRow(
-                          "Kandang/Satpam",
-                          "${suhuData.kandangName} - ${suhuData.satpamName}",
-                        ),
-                        _buildRow(
-                          "Suhu",
-                          "${suhuData.temperature.toString()} C",
-                        ),
-                        _buildRow("Catatan", suhuData.note ?? ''),
                       ],
                     ),
                   ),
@@ -367,4 +314,10 @@ class _KandangSuhuState extends State<KandangSuhu> {
       ),
     );
   }
+}
+
+String limitWords(String text, int maxWords) {
+  final words = text.split(RegExp(r'\s+'));
+  if (words.length <= maxWords) return text;
+  return '${words.take(maxWords).join(' ')}...';
 }

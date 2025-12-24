@@ -12,6 +12,8 @@ import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/utils/firebase_background_handler.dart';
 import 'package:qbsc_saas/app/utils/topic_service.dart';
 import 'package:qbsc_saas/app/views/absensi/absensi.dart';
+import 'package:qbsc_saas/app/views/broadcast/broadcast.dart';
+import 'package:qbsc_saas/app/views/doc/doc.dart';
 
 import 'package:qbsc_saas/app/views/emergency/emgergency.dart';
 import 'package:qbsc_saas/app/views/home_view.dart';
@@ -132,6 +134,8 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/absensi', page: () => Absensi()),
         GetPage(name: '/patroli', page: () => Patroli()),
         GetPage(name: '/kandang', page: () => KandangTabPage()),
+        GetPage(name: '/doc', page: () => DocPage()),
+        GetPage(name: '/broadcast', page: () => Broadcast()),
         GetPage(name: '/pengaturan', page: () => Pengaturan()),
         GetPage(name: '/darurat', page: () => Emgergency()),
         GetPage(name: '/notifikasi', page: () => Notif()),

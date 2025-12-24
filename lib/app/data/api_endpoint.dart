@@ -13,6 +13,10 @@ class ApiEndpoint {
   static const String kandangKipas = "$apiPrefix/kandang_kipas";
   static const String kandangAlarm = "$apiPrefix/kandang_alarm";
   static const String kandangLampu = "$apiPrefix/kandang_lampu";
+  static const String doc = "$apiPrefix/doc";
+  static const String ekspedisi = "$apiPrefix/ekspedisi";
+  static const String broadcast = "$apiPrefix/broadcast";
+  static const String broadcastAdd = "$apiPrefix/broadcast_add";
 
   static const String absenActive = '/absen_active';
   static const String locationData = '/location_data';

@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/kandang/alarm/alarm_controller.dart';
+import 'package:qbsc_saas/app/views/kandang/alarm/alarm_detail.dart';
 import 'package:qbsc_saas/app/views/kandang/alarm/alarm_model.dart';
 import 'package:qbsc_saas/app/views/kandang/kipas/kipas_model.dart';
 
@@ -298,7 +299,7 @@ class _KandangAlarmState extends State<KandangAlarm> {
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  // Get.to(() => KandangDetail(data: Kandang));
+                  Get.to(() => AlarmDetail(data: alarmData));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),

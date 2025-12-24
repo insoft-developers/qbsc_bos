@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/kandang/lampu/lampu_controller.dart';
+import 'package:qbsc_saas/app/views/kandang/lampu/lampu_detail.dart';
 import 'package:qbsc_saas/app/views/kandang/lampu/lampu_model.dart';
 
 class KandangLampu extends StatefulWidget {
@@ -297,7 +298,7 @@ class _KandangLampuState extends State<KandangLampu> {
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  // Get.to(() => KandangDetail(data: Kandang));
+                  Get.to(() => LampuDetail(data: lampuData));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),

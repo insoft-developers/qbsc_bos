@@ -63,6 +63,7 @@ class _HomeViewState extends State<HomeView> {
     final baseMenu = [
       {'icon': 'assets/images/absensi.png', 'label': 'Monitoring Absensi'},
       {'icon': 'assets/images/patroli.png', 'label': 'Monitoring Patroli'},
+      {'icon': 'assets/images/broadcast.png', 'label': 'Buat Broadcast'},
       {'icon': 'assets/images/laporan.png', 'label': 'Lihat Laporan'},
       {'icon': 'assets/images/kejadian.png', 'label': 'Monitoring Kejadian'},
       {'icon': 'assets/images/tamu.png', 'label': 'Monitoring Tamu'},
@@ -93,6 +94,10 @@ class _HomeViewState extends State<HomeView> {
       Get.toNamed('/patroli');
     } else if (label == 'Monitoring Kandang') {
       Get.toNamed('/kandang');
+    } else if (label == 'Lihat Catatan DOC') {
+      Get.toNamed('/doc');
+    } else if (label == 'Buat Broadcast') {
+      Get.toNamed('/broadcast');
     }
   }
 
