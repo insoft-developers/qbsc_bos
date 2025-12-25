@@ -101,6 +101,8 @@ class _HomeViewState extends State<HomeView> {
       Get.toNamed('/broadcast');
     } else if (label == 'Laporan Situasi') {
       Get.toNamed('/situasi');
+    } else if (label == 'Monitoring Tamu') {
+      Get.toNamed('/tamu');
     }
   }
 

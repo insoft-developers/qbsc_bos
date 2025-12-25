@@ -27,6 +27,7 @@ import 'package:qbsc_saas/app/views/pengaturan/pengaturan.dart';
 import 'package:qbsc_saas/app/views/pengaturan/profil/profil.dart';
 import 'package:qbsc_saas/app/views/situasi/situasi.dart';
 import 'package:qbsc_saas/app/views/splash_view.dart';
+import 'package:qbsc_saas/app/views/tamu/tamu.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
     FlutterLocalNotificationsPlugin();
@@ -138,6 +139,7 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/doc', page: () => DocPage()),
         GetPage(name: '/broadcast', page: () => Broadcast()),
         GetPage(name: '/situasi', page: () => SituasiPage()),
+        GetPage(name: '/tamu', page: () => TamuPage()),
         GetPage(name: '/pengaturan', page: () => Pengaturan()),
         GetPage(name: '/darurat', page: () => Emgergency()),
         GetPage(name: '/notifikasi', page: () => Notif()),

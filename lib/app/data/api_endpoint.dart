@@ -21,6 +21,9 @@ class ApiEndpoint {
 
   static const String laporanSituasi = "$apiPrefix/situasi";
   static const String slider = "$apiPrefix/slider";
+  static const String tamu = "$apiPrefix/tamu";
+  static const String user = "$apiPrefix/user";
+  static const String tamuDelete = "$apiPrefix/tamu_delete";
 
   static const String absenActive = '/absen_active';
   static const String locationData = '/location_data';
