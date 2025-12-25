@@ -1,25 +1,54 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
+import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/doc/doc_controller.dart';
-import 'package:qbsc_saas/app/views/doc/doc_model.dart';
+import 'package:qbsc_saas/app/views/broadcast/broadcast_controller.dart';
+import 'package:qbsc_saas/app/views/broadcast/broadcast_model.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli_foto_preview.dart';
 
-class DocDetail extends StatelessWidget {
-  final DocModel data;
+class BroadcastDetail extends StatelessWidget {
+  final BroadcastModel data;
 
-  const DocDetail({super.key, required this.data});
+  const BroadcastDetail({super.key, required this.data});
+
+  void _confirmDelete(
+    BuildContext context,
+    BroadcastController controller,
+    int id,
+  ) {
+    Get.dialog(
+      AlertDialog(
+        title: const Text('Konfirmasi'),
+        content: const Text(
+          'Apakah Anda yakin ingin menghapus broadcast ini?\n\n'
+          'Data yang sudah dihapus tidak dapat dikembalikan.',
+        ),
+        actions: [
+          TextButton(onPressed: () => Get.back(), child: const Text('Batal')),
+          ElevatedButton(
+            style: ElevatedButton.styleFrom(backgroundColor: Colors.red),
+            onPressed: () async {
+              controller.deleteBroadcast(id);
+              Get.back();
+            },
+            child: const Text('Hapus', style: TextStyle(color: Colors.white)),
+          ),
+        ],
+      ),
+    );
+  }
 
   @override
   Widget build(BuildContext context) {
-    final _doc = Get.find<DocController>();
+    final _broadcast = Get.find<BroadcastController>();
+    final userId = int.parse(AppPrefs.getUserId() ?? '0');
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
         title: const Text(
-          'Detail Doc Keluar',
+          'Detail Pesan Broadcast',
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -36,7 +65,7 @@ class DocDetail extends StatelessWidget {
               decoration: const BoxDecoration(color: Color(0xFF0F172A)),
               child: Column(
                 children: [
-                  _fotoDoc(context, "${ApiProvider.imageUrl}/${data.foto}"),
+                  _fotoDoc(context, "${ApiProvider.imageUrl}/${data.image}"),
                   const SizedBox(height: 12),
                 ],
               ),
@@ -50,33 +79,22 @@ class DocDetail extends StatelessWidget {
               child: Column(
                 children: [
                   _card(
-                    title: 'Informasi Catatan DOC',
+                    title: 'Informasi Broadcast',
                     children: [
                       _row('ID', data.id.toString()),
-                      _row('Tanggal', Fungsi.tanggalIndo(data.tanggal)),
-                      _row('Jam', data.jam),
-                      _row('Satpam', data.satpamName),
+                      _row('Tanggal', Fungsi.tanggalIndo(data.createdAt)),
+                      _row('Pengirim', data.senderName),
                     ],
                   ),
 
                   const SizedBox(height: 12),
 
                   _card(
-                    title: 'DOC',
+                    title: 'Pesan',
                     children: [
-                      _row('Ekspedisi', data.ekspedisiName),
-                      _row('Jumlah', "${data.jumlah.toString()} Box"),
-                      _row('Jenis Doc', data.jenis == 1 ? "Male" : "Female"),
-                      _row('Tujuan', data.tujuan ?? ''),
-                      _row('No Polisi', data.noPolisi ?? ''),
+                      _columnText('Judul', data.judul),
+                      _columnText('Pesan', data.pesan),
                     ],
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  _card(
-                    title: 'Catatan',
-                    children: [_row('Deskripsi', data.note ?? '-')],
                   ),
 
                   const SizedBox(height: 12),
@@ -84,14 +102,33 @@ class DocDetail extends StatelessWidget {
                   _card(
                     title: 'Metadata',
                     children: [
-                      _row(
-                        'Tanggal Input',
-                        Fungsi.formatDateTime(data.inputDate ?? ''),
-                      ),
                       _row('Dibuat', Fungsi.formatDateTime(data.createdAt)),
                       _row('Perusahaan', data.comName),
                     ],
                   ),
+
+                  const SizedBox(height: 24),
+
+                  data.pengirim == userId
+                      ? SizedBox(
+                          width: double.infinity,
+                          child: ElevatedButton.icon(
+                            icon: const Icon(Icons.delete_outline),
+                            label: const Text('Hapus Broadcast'),
+                            style: ElevatedButton.styleFrom(
+                              backgroundColor: Colors.red.shade600,
+                              foregroundColor: Colors.white,
+                              padding: const EdgeInsets.symmetric(vertical: 14),
+                              shape: RoundedRectangleBorder(
+                                borderRadius: BorderRadius.circular(12),
+                              ),
+                            ),
+                            onPressed: () {
+                              _confirmDelete(context, _broadcast, data.id);
+                            },
+                          ),
+                        )
+                      : const SizedBox(),
                 ],
               ),
             ),
@@ -158,22 +195,49 @@ class DocDetail extends StatelessWidget {
   }
 
   Widget _card({required String title, required List<Widget> children}) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            ...children,
-          ],
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...children,
+            ],
+          ),
         ),
+      ),
+    );
+  }
+
+  Widget _columnText(String title, String content) {
+    return Padding(
+      padding: const EdgeInsets.symmetric(vertical: 6),
+      child: Column(
+        crossAxisAlignment: CrossAxisAlignment.start,
+        children: [
+          Text(title, style: const TextStyle(color: Colors.grey)),
+          const SizedBox(height: 6),
+          Text(
+            content,
+            style: const TextStyle(
+              fontSize: 15,
+              fontWeight: FontWeight.w400,
+              height: 1.5,
+            ),
+          ),
+        ],
       ),
     );
   }

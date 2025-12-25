@@ -15,7 +15,7 @@ class BroadcastAddPage extends StatelessWidget {
         backgroundColor: const Color.fromARGB(255, 60, 53, 53),
         title: const Text(
           'Buat Broadcast Baru',
-          style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
+          style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
       ),
@@ -36,7 +36,7 @@ class BroadcastAddPage extends StatelessWidget {
               ),
 
               const Text(
-                'Detail Kejadian',
+                'Pesan broadcast',
                 style: TextStyle(fontSize: 18, fontWeight: FontWeight.w600),
               ),
               const SizedBox(height: 14),
@@ -46,10 +46,9 @@ class BroadcastAddPage extends StatelessWidget {
                 maxLines: 4,
                 textInputAction: TextInputAction.next,
                 decoration: InputDecoration(
-                  labelText: 'Deskripsi Kejadian',
-                  hintText:
-                      'Jelaskan kejadian yang terjadi secara singkat dan jelas',
-                  prefixIcon: const Icon(Icons.report_problem_outlined),
+                  labelText: 'Pesan Broadcast',
+                  hintText: 'Tuliskan pesan anda dengan jelas dan detail ',
+                  prefixIcon: const Icon(Icons.message_outlined),
                   filled: true,
                   fillColor: Colors.grey.shade50,
                   border: OutlineInputBorder(
@@ -86,7 +85,7 @@ class BroadcastAddPage extends StatelessWidget {
                                 borderRadius: BorderRadius.circular(12),
                               ),
                               child: const Text(
-                                'Belum ada foto',
+                                'Belum ada gambar',
                                 style: TextStyle(color: Colors.black54),
                               ),
                             )
@@ -100,10 +99,21 @@ class BroadcastAddPage extends StatelessWidget {
                               ),
                             ),
                       const SizedBox(height: 12),
-                      OutlinedButton.icon(
-                        onPressed: c.pickFoto,
-                        icon: const Icon(Icons.camera_alt_outlined),
-                        label: const Text("Ambil Foto"),
+                      Row(
+                        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+                        children: [
+                          OutlinedButton.icon(
+                            onPressed: c.pickFotoCamera,
+                            icon: const Icon(Icons.camera_alt_outlined),
+                            label: const Text("Kamera"),
+                          ),
+
+                          OutlinedButton.icon(
+                            onPressed: c.pickFoto,
+                            icon: const Icon(Icons.browse_gallery),
+                            label: const Text("Gallery"),
+                          ),
+                        ],
                       ),
                     ],
                   ),
@@ -147,7 +157,7 @@ class BroadcastAddPage extends StatelessWidget {
                             ),
                           )
                         : const Text(
-                            'SIMPAN DATA',
+                            'Simpan Data',
                             style: TextStyle(
                               color: Colors.white,
                               fontSize: 16,

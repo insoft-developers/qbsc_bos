@@ -55,9 +55,10 @@ class BroadcastAddController extends GetxController {
       var body = response.data;
 
       if (body['success']) {
-        SnackbarHelper.success('sukses', 'Sukses Tambah Data Tamu');
+        resetForm();
+        SnackbarHelper.success('sukses', 'Sukses Tambah Data');
       } else {
-        SnackbarHelper.error('Warning', 'Data tidak ditemukan');
+        SnackbarHelper.error('Warning', body['message'].toString());
       }
     } catch (e) {
       SnackbarHelper.error('Warning', e.toString());
@@ -82,6 +83,13 @@ class BroadcastAddController extends GetxController {
     }
   }
 
+  Future pickFotoCamera() async {
+    final img = await picker.pickImage(source: ImageSource.camera);
+    if (img != null) {
+      foto.value = File(img.path);
+    }
+  }
+
   String toTitleCase(String text) {
     if (text.isEmpty) return text;
     return text
@@ -91,5 +99,13 @@ class BroadcastAddController extends GetxController {
           return word[0].toUpperCase() + word.substring(1).toLowerCase();
         })
         .join(' ');
+  }
+
+  void resetForm() {
+    judul.value = '';
+    pesan.value = '';
+    foto.value = null;
+
+    formKey.currentState?.reset();
   }
 }

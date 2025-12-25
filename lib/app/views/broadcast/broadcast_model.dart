@@ -6,7 +6,9 @@ class BroadcastModel {
   final int pengirim;
   final int sendStatus;
   final int comid;
+  final String senderName;
   final String createdAt;
+  final String comName;
 
   BroadcastModel({
     required this.id,
@@ -16,7 +18,9 @@ class BroadcastModel {
     required this.pengirim,
     required this.sendStatus,
     required this.comid,
+    required this.senderName,
     required this.createdAt,
+    required this.comName,
   });
 
   factory BroadcastModel.fromJson(Map<String, dynamic> json) {
@@ -28,7 +32,9 @@ class BroadcastModel {
       pengirim: json['pengirim'],
       sendStatus: json['send_status'],
       comid: json['comid'],
+      senderName: json['user']['name'] ?? '',
       createdAt: json['created_at'],
+      comName: json['company']['company_name'] ?? '',
     );
   }
 }

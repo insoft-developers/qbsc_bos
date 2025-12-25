@@ -1,20 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/broadcast/broadcast_add.dart';
-import 'package:qbsc_saas/app/views/broadcast/broadcast_controller.dart';
-import 'package:qbsc_saas/app/views/broadcast/broadcast_detail.dart';
-import 'package:qbsc_saas/app/views/broadcast/broadcast_model.dart';
+import 'package:qbsc_saas/app/views/doc/doc_detail.dart';
+import 'package:qbsc_saas/app/views/doc/doc_model.dart';
+import 'package:qbsc_saas/app/views/situasi/situasi_controller.dart';
+import 'package:qbsc_saas/app/views/situasi/situasi_detail.dart';
+import 'package:qbsc_saas/app/views/situasi/situasi_model.dart';
 
-class Broadcast extends StatefulWidget {
-  const Broadcast({super.key});
+class SituasiPage extends StatefulWidget {
+  const SituasiPage({super.key});
 
   @override
-  State<Broadcast> createState() => _BroadcastState();
+  State<SituasiPage> createState() => _SituasiPageState();
 }
 
-class _BroadcastState extends State<Broadcast> {
-  final BroadcastController controller = Get.put(BroadcastController());
+class _SituasiPageState extends State<SituasiPage> {
+  final SituasiController controller = Get.put(SituasiController());
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -28,7 +29,7 @@ class _BroadcastState extends State<Broadcast> {
             scrollController.position.maxScrollExtent - 200 &&
         controller.isMoreDataAvailable.value &&
         !controller.isLoading.value) {
-      controller.fetchBroadcast(loadMore: true);
+      controller.fetchSituasi(loadMore: true);
     }
   }
 
@@ -42,6 +43,7 @@ class _BroadcastState extends State<Broadcast> {
   // FILTER BOTTOM SHEET
   // =========================
   void _showFilterBottomSheet() {
+    int? selectedSatpamId = controller.selectedSatpamId.value;
     DateTime? startDate;
     DateTime? endDate;
 
@@ -66,7 +68,7 @@ class _BroadcastState extends State<Broadcast> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Filter Broadcast',
+                    'Filter Laporan Situasi',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -124,6 +126,35 @@ class _BroadcastState extends State<Broadcast> {
                       ),
                     ],
                   ),
+
+                  const SizedBox(height: 12),
+
+                  // ===== FILTER SATPAM (DROPDOWN DB) =====
+                  Obx(() {
+                    return DropdownButtonFormField<int>(
+                      value: selectedSatpamId,
+                      decoration: const InputDecoration(
+                        labelText: 'Satpam',
+                        border: OutlineInputBorder(),
+                      ),
+                      items: [
+                        const DropdownMenuItem<int>(
+                          value: null,
+                          child: Text('Semua Satpam'),
+                        ),
+                        ...controller.satpamList.map(
+                          (s) => DropdownMenuItem<int>(
+                            value: s.id,
+                            child: Text(s.name),
+                          ),
+                        ),
+                      ],
+                      onChanged: (val) {
+                        setState(() => selectedSatpamId = val);
+                      },
+                    );
+                  }),
+
                   const SizedBox(height: 12),
                   // ===== ACTION =====
                   Row(
@@ -147,6 +178,7 @@ class _BroadcastState extends State<Broadcast> {
                                 10,
                               ),
                               end: endDate?.toIso8601String().substring(0, 10),
+                              satpamId: selectedSatpamId,
                             );
                             Navigator.pop(context);
                           },
@@ -173,7 +205,7 @@ class _BroadcastState extends State<Broadcast> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
         title: const Text(
-          'Buat Broadcast',
+          'Laporan Situasi',
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -184,36 +216,23 @@ class _BroadcastState extends State<Broadcast> {
           ),
         ],
       ),
-      floatingActionButton: Column(
-        mainAxisAlignment: MainAxisAlignment.end,
-        children: [
-          FloatingActionButton(
-            backgroundColor: Colors.green,
-            child: const Icon(Icons.refresh, color: Colors.white),
-            onPressed: () {
-              controller.refreshData();
-            },
-          ),
-          const SizedBox(height: 10),
-          FloatingActionButton(
-            backgroundColor: Colors.blue,
-            child: const Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Get.to(() => BroadcastAddPage());
-            },
-          ),
-        ],
+      floatingActionButton: FloatingActionButton(
+        backgroundColor: Colors.green,
+        child: const Icon(Icons.refresh, color: Colors.white),
+        onPressed: () {
+          controller.refreshData();
+        },
       ),
 
       backgroundColor: Colors.white,
       body: Obx(() {
         // 1️⃣ Loading pertama kali
-        if (controller.isLoading.value && controller.broadcastList.isEmpty) {
+        if (controller.isLoading.value && controller.situasiList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
         // 2️⃣ Data kosong (hasil filter tidak ada)
-        if (!controller.isLoading.value && controller.broadcastList.isEmpty) {
+        if (!controller.isLoading.value && controller.situasiList.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -221,7 +240,7 @@ class _BroadcastState extends State<Broadcast> {
                 Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 12),
                 Text(
-                  'Data Broadcast tidak ditemukan',
+                  'Data tidak ditemukan',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -243,16 +262,16 @@ class _BroadcastState extends State<Broadcast> {
           controller: scrollController,
           padding: const EdgeInsets.all(16),
           itemCount:
-              controller.broadcastList.length +
+              controller.situasiList.length +
               (controller.isMoreDataAvailable.value ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index < controller.broadcastList.length) {
-              final BroadcastModel dataShow = controller.broadcastList[index];
+            if (index < controller.situasiList.length) {
+              final SituasiModel dataShow = controller.situasiList[index];
 
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  Get.to(() => BroadcastDetail(data: dataShow));
+                  Get.to(() => SituasiDetail(data: dataShow));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -261,14 +280,13 @@ class _BroadcastState extends State<Broadcast> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
-                        _buildRow("Judul", dataShow.judul),
-                        _buildRow("Pesan", limitWords(dataShow.pesan, 15)),
-
+                        _buildRow("Satpam", dataShow.satpamName),
                         _buildRow(
-                          "Tanggal",
-                          Fungsi.formatDateTime(dataShow.createdAt),
+                          "Tanggal / Jam",
+                          "${Fungsi.tanggalIndo(dataShow.tanggal)} - ${Fungsi.formatToTime(dataShow.tanggal)}",
                         ),
-                        _buildRow("Pengirim", dataShow.senderName),
+
+                        _buildRow("Laporan", limitWords(dataShow.laporan, 25)),
                       ],
                     ),
                   ),

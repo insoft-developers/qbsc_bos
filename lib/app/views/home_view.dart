@@ -5,6 +5,7 @@ import 'package:get/get.dart';
 import 'package:qbsc_saas/app/controllers/auth_controller.dart';
 import 'package:qbsc_saas/app/controllers/home_controller.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
+import 'package:qbsc_saas/app/slider/sliderpage_controller.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 
 class HomeView extends StatefulWidget {
@@ -65,7 +66,7 @@ class _HomeViewState extends State<HomeView> {
       {'icon': 'assets/images/patroli.png', 'label': 'Monitoring Patroli'},
       {'icon': 'assets/images/broadcast.png', 'label': 'Buat Broadcast'},
       {'icon': 'assets/images/laporan.png', 'label': 'Lihat Laporan'},
-      {'icon': 'assets/images/kejadian.png', 'label': 'Monitoring Kejadian'},
+      {'icon': 'assets/images/kejadian.png', 'label': 'Laporan Situasi'},
       {'icon': 'assets/images/tamu.png', 'label': 'Monitoring Tamu'},
       {'icon': 'assets/images/setting.png', 'label': 'Pengaturan'},
     ];
@@ -98,6 +99,8 @@ class _HomeViewState extends State<HomeView> {
       Get.toNamed('/doc');
     } else if (label == 'Buat Broadcast') {
       Get.toNamed('/broadcast');
+    } else if (label == 'Laporan Situasi') {
+      Get.toNamed('/situasi');
     }
   }
 
@@ -202,53 +205,75 @@ class _HomeViewState extends State<HomeView> {
 
   // ================= SLIDER =================
   Widget _buildImageSlider() {
-    return Column(
-      children: [
-        SizedBox(
-          height: 160,
-          child: ClipRRect(
-            borderRadius: BorderRadius.circular(18),
-            child: PageView.builder(
-              controller: _pageController,
-              onPageChanged: (index) {
-                setState(() => _currentSlide = index % sliderImages.length);
-              },
-              itemBuilder: (_, index) {
-                final imageUrl = sliderImages[index % sliderImages.length];
+    final controller = Get.put(SliderpageController());
 
-                return CachedNetworkImage(
-                  imageUrl: imageUrl,
-                  fit: BoxFit.cover,
-                  placeholder: (_, __) => const _HighContrastShimmer(),
-                  errorWidget: (_, __, ___) => Container(
-                    color: Colors.grey.shade200,
-                    child: const Icon(Icons.image_not_supported, size: 40),
-                  ),
-                  fadeInDuration: const Duration(milliseconds: 400),
-                );
-              },
+    return Obx(() {
+      if (controller.isLoading.value) {
+        return const SizedBox(height: 160, child: _HighContrastShimmer());
+      }
+
+      if (controller.sliderImages.isEmpty) {
+        return const SizedBox(
+          height: 160,
+          child: Center(child: Text('Tidak ada gambar')),
+        );
+      }
+
+      return Column(
+        children: [
+          SizedBox(
+            height: 160,
+            child: ClipRRect(
+              borderRadius: BorderRadius.circular(18),
+              child: PageView.builder(
+                controller: _pageController,
+                onPageChanged: (index) {
+                  setState(() {
+                    _currentSlide = index % controller.sliderImages.length;
+                  });
+                },
+                itemBuilder: (_, index) {
+                  final imageUrl =
+                      "${ApiProvider.imageUrl}/${controller.sliderImages[index % controller.sliderImages.length]}";
+                  print(imageUrl);
+
+                  return CachedNetworkImage(
+                    imageUrl: imageUrl,
+                    fit: BoxFit.cover,
+                    placeholder: (_, __) => const _HighContrastShimmer(),
+                    errorWidget: (_, __, ___) => Container(
+                      color: Colors.grey.shade200,
+                      child: const Icon(Icons.image_not_supported, size: 40),
+                    ),
+                  );
+                },
+              ),
             ),
           ),
-        ),
-        const SizedBox(height: 8),
-        Row(
-          mainAxisAlignment: MainAxisAlignment.center,
-          children: List.generate(sliderImages.length, (i) {
-            final active = _currentSlide == i;
-            return AnimatedContainer(
-              duration: const Duration(milliseconds: 300),
-              margin: const EdgeInsets.symmetric(horizontal: 4),
-              width: active ? 18 : 6,
-              height: 6,
-              decoration: BoxDecoration(
-                color: active ? const Color(0xFF0F172A) : Colors.grey.shade400,
-                borderRadius: BorderRadius.circular(6),
-              ),
-            );
-          }),
-        ),
-      ],
-    );
+          const SizedBox(height: 8),
+
+          // indicator
+          Row(
+            mainAxisAlignment: MainAxisAlignment.center,
+            children: List.generate(controller.sliderImages.length, (i) {
+              final active = _currentSlide == i;
+              return AnimatedContainer(
+                duration: const Duration(milliseconds: 300),
+                margin: const EdgeInsets.symmetric(horizontal: 4),
+                width: active ? 18 : 6,
+                height: 6,
+                decoration: BoxDecoration(
+                  color: active
+                      ? const Color(0xFF0F172A)
+                      : Colors.grey.shade400,
+                  borderRadius: BorderRadius.circular(6),
+                ),
+              );
+            }),
+          ),
+        ],
+      );
+    });
   }
 
   // ================= SUMMARY =================

@@ -25,6 +25,7 @@ import 'package:qbsc_saas/app/views/patroli/patroli.dart';
 import 'package:qbsc_saas/app/views/pengaturan/password/change_password.dart';
 import 'package:qbsc_saas/app/views/pengaturan/pengaturan.dart';
 import 'package:qbsc_saas/app/views/pengaturan/profil/profil.dart';
+import 'package:qbsc_saas/app/views/situasi/situasi.dart';
 import 'package:qbsc_saas/app/views/splash_view.dart';
 
 final FlutterLocalNotificationsPlugin flutterLocalNotificationsPlugin =
@@ -136,6 +137,7 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/kandang', page: () => KandangTabPage()),
         GetPage(name: '/doc', page: () => DocPage()),
         GetPage(name: '/broadcast', page: () => Broadcast()),
+        GetPage(name: '/situasi', page: () => SituasiPage()),
         GetPage(name: '/pengaturan', page: () => Pengaturan()),
         GetPage(name: '/darurat', page: () => Emgergency()),
         GetPage(name: '/notifikasi', page: () => Notif()),

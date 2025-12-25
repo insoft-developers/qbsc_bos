@@ -2,24 +2,24 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/doc/doc_controller.dart';
-import 'package:qbsc_saas/app/views/doc/doc_model.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli_foto_preview.dart';
+import 'package:qbsc_saas/app/views/situasi/situasi_controller.dart';
+import 'package:qbsc_saas/app/views/situasi/situasi_model.dart';
 
-class DocDetail extends StatelessWidget {
-  final DocModel data;
+class SituasiDetail extends StatelessWidget {
+  final SituasiModel data;
 
-  const DocDetail({super.key, required this.data});
+  const SituasiDetail({super.key, required this.data});
 
   @override
   Widget build(BuildContext context) {
-    final _doc = Get.find<DocController>();
+    final _controller = Get.find<SituasiController>();
     return Scaffold(
       backgroundColor: Colors.grey.shade100,
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
         title: const Text(
-          'Detail Doc Keluar',
+          'Detail Laporan Situasi',
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -50,11 +50,11 @@ class DocDetail extends StatelessWidget {
               child: Column(
                 children: [
                   _card(
-                    title: 'Informasi Catatan DOC',
+                    title: 'Informasi',
                     children: [
                       _row('ID', data.id.toString()),
                       _row('Tanggal', Fungsi.tanggalIndo(data.tanggal)),
-                      _row('Jam', data.jam),
+                      _row('Jam', Fungsi.formatToTime(data.tanggal)),
                       _row('Satpam', data.satpamName),
                     ],
                   ),
@@ -62,21 +62,15 @@ class DocDetail extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   _card(
-                    title: 'DOC',
+                    title: 'Laporan',
                     children: [
-                      _row('Ekspedisi', data.ekspedisiName),
-                      _row('Jumlah', "${data.jumlah.toString()} Box"),
-                      _row('Jenis Doc', data.jenis == 1 ? "Male" : "Female"),
-                      _row('Tujuan', data.tujuan ?? ''),
-                      _row('No Polisi', data.noPolisi ?? ''),
+                      Text(
+                        data.laporan,
+                        style: TextStyle(
+                          color: const Color.fromARGB(255, 6, 30, 50),
+                        ),
+                      ),
                     ],
-                  ),
-
-                  const SizedBox(height: 12),
-
-                  _card(
-                    title: 'Catatan',
-                    children: [_row('Deskripsi', data.note ?? '-')],
                   ),
 
                   const SizedBox(height: 12),
@@ -84,10 +78,6 @@ class DocDetail extends StatelessWidget {
                   _card(
                     title: 'Metadata',
                     children: [
-                      _row(
-                        'Tanggal Input',
-                        Fungsi.formatDateTime(data.inputDate ?? ''),
-                      ),
                       _row('Dibuat', Fungsi.formatDateTime(data.createdAt)),
                       _row('Perusahaan', data.comName),
                     ],
@@ -158,21 +148,27 @@ class DocDetail extends StatelessWidget {
   }
 
   Widget _card({required String title, required List<Widget> children}) {
-    return Card(
-      elevation: 2,
-      shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
-      child: Padding(
-        padding: const EdgeInsets.all(16),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: const TextStyle(fontSize: 15, fontWeight: FontWeight.bold),
-            ),
-            const SizedBox(height: 12),
-            ...children,
-          ],
+    return SizedBox(
+      width: double.infinity,
+      child: Card(
+        elevation: 2,
+        shape: RoundedRectangleBorder(borderRadius: BorderRadius.circular(12)),
+        child: Padding(
+          padding: const EdgeInsets.all(16),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: const TextStyle(
+                  fontSize: 15,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+              const SizedBox(height: 12),
+              ...children,
+            ],
+          ),
         ),
       ),
     );
