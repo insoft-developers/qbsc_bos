@@ -1,5 +1,6 @@
 class TamuModel {
   final int id;
+  final String uuid;
   final int? satpamId;
   final String? satpamName;
   final int? satpamIdPulang;
@@ -21,6 +22,7 @@ class TamuModel {
 
   TamuModel({
     required this.id,
+    required this.uuid,
     this.satpamId,
     this.satpamName,
     this.satpamIdPulang,
@@ -47,6 +49,7 @@ class TamuModel {
   factory TamuModel.fromJson(Map<String, dynamic> json) {
     return TamuModel(
       id: json['id'] ?? 0,
+      uuid: json['uuid'],
       satpamId: json['satpam_id'] ?? 0,
       satpamName: json['satpam'] != null ? json['satpam']['name'] : null,
 
@@ -64,7 +67,7 @@ class TamuModel {
       arriveAt: json['arrive_at'] ?? '',
       leaveAt: json['leave_at'] ?? '',
       createdBy: json['created_by'] ?? 0,
-      createdName: json['user'] != null ? json['user']['name'] : null,
+      createdName: json['user'] != null ? json['user']['name'] : 'Satpam',
       comid: json['comid'] ?? 0,
       comName: json['company']['company_name'] ?? '',
       createdAt: json['created_at'] ?? '',

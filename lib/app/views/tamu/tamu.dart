@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/tamu/tamu_controller.dart';
+import 'package:qbsc_saas/app/views/tamu/tamu_detail.dart';
 import 'package:qbsc_saas/app/views/tamu/tamu_model.dart';
 
 class TamuPage extends StatefulWidget {
@@ -298,7 +299,7 @@ class _TamuPageState extends State<TamuPage> {
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  // Get.to(() => _tamuDetail(data: _tamu));
+                  Get.to(() => TamuDetail(data: _tamu));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
