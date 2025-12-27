@@ -1,16 +1,18 @@
-package com.qbsc.admin
+package com.qbsc.bos
 
 import android.provider.Settings
 import io.flutter.embedding.android.FlutterActivity
 import io.flutter.embedding.engine.FlutterEngine
 import io.flutter.plugin.common.MethodChannel
+import io.flutter.plugins.GeneratedPluginRegistrant
 
 class MainActivity : FlutterActivity() {
 
     private val CHANNEL = "security/developer_mode"
 
     override fun configureFlutterEngine(flutterEngine: FlutterEngine) {
-        super.configureFlutterEngine(flutterEngine)
+        // 🔥 WAJIB: register semua plugin (TERMASUK WebView)
+        GeneratedPluginRegistrant.registerWith(flutterEngine)
 
         MethodChannel(
             flutterEngine.dartExecutor.binaryMessenger,

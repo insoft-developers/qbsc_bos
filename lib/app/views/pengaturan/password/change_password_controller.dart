@@ -35,13 +35,13 @@ class ChangePasswordController extends GetxController {
 
     isLoading.value = true;
 
-    int satpamId = int.parse(AppPrefs.getUserId() ?? '0');
+    int userid = int.parse(AppPrefs.getUserId() ?? '0');
 
     try {
       final response = await api.post(
         ApiEndpoint.changePassword,
         data: {
-          'satpam_id': satpamId,
+          'userid': userid,
           'old_password': oldPasswordC.text,
           'new_password': newPasswordC.text,
           'new_password_confirmation': confirmPasswordC.text,

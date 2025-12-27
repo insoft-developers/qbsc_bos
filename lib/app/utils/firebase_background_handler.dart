@@ -7,6 +7,7 @@ Future<void> firebaseMessagingBackgroundHandler(RemoteMessage message) async {
   try {
     final homeC = Get.find<HomeController>();
     homeC.increment(); // 🔥 tambah angka notif jika app background
+    print('backgroudn notif');
   } catch (_) {
     // jika HomeController belum terdaftar, abaikan
   }

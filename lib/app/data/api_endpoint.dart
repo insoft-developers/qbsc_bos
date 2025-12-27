@@ -1,3 +1,5 @@
+import 'package:qbsc_saas/app/data/api_provider.dart';
+
 class ApiEndpoint {
   // Auth
   static const apiPrefix = "/bos";
@@ -24,17 +26,14 @@ class ApiEndpoint {
   static const String tamu = "$apiPrefix/tamu";
   static const String user = "$apiPrefix/user";
   static const String tamuDelete = "$apiPrefix/tamu_delete";
+  static const String tamuAdd = "$apiPrefix/tamu_add";
+  static const String notifikasi = "$apiPrefix/notifikasi";
+  static const String getProfileData = "$apiPrefix/profile";
+  static const String updateUserProfile = "$apiPrefix/profile_update";
 
-  static const String absenActive = '/absen_active';
-  static const String locationData = '/location_data';
-  static const String getDataLocation = '/get_data_location';
-  static const String updateLocationCoordinates =
-      '/update_location_coordinates';
+  static const String webviewResumeKandang =
+      "${ApiProvider.rootUrl}/api$apiPrefix/kandang_resume";
 
   static const String checkPaket = '/check_paket';
-  static const String emergency = '/darurat';
-  static const String getNotifList = '/get_notif_list';
-  static const String getProfileData = '/get_profile_data';
-  static const String updateSatpamProfile = '/update_satpam_profile';
-  static const String changePassword = '/ubah_password_satpam';
+  static const String changePassword = "$apiPrefix/user_password_change";
 }

@@ -4,9 +4,12 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/controllers/auth_controller.dart';
 import 'package:qbsc_saas/app/controllers/home_controller.dart';
+import 'package:qbsc_saas/app/controllers/paket_controller.dart';
+import 'package:qbsc_saas/app/data/api_endpoint.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/slider/sliderpage_controller.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
+import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -18,6 +21,7 @@ class HomeView extends StatefulWidget {
 class _HomeViewState extends State<HomeView> {
   final AuthController authC = Get.put(AuthController());
   final HomeController homeC = Get.put(HomeController());
+  final PaketController _paket = Get.put(PaketController());
 
   final String? isPeternakan = AppPrefs.getIsPeternakan();
 
@@ -42,6 +46,7 @@ class _HomeViewState extends State<HomeView> {
 
     _initMenu();
     _autoSlide();
+    _paket.checkPaket();
   }
 
   @override
@@ -65,7 +70,7 @@ class _HomeViewState extends State<HomeView> {
       {'icon': 'assets/images/absensi.png', 'label': 'Monitoring Absensi'},
       {'icon': 'assets/images/patroli.png', 'label': 'Monitoring Patroli'},
       {'icon': 'assets/images/broadcast.png', 'label': 'Buat Broadcast'},
-      {'icon': 'assets/images/laporan.png', 'label': 'Lihat Laporan'},
+
       {'icon': 'assets/images/kejadian.png', 'label': 'Laporan Situasi'},
       {'icon': 'assets/images/tamu.png', 'label': 'Monitoring Tamu'},
       {'icon': 'assets/images/setting.png', 'label': 'Pengaturan'},
@@ -75,6 +80,10 @@ class _HomeViewState extends State<HomeView> {
       baseMenu.insertAll(2, [
         {'icon': 'assets/images/kandang.png', 'label': 'Monitoring Kandang'},
         {'icon': 'assets/images/doc.png', 'label': 'Lihat Catatan DOC'},
+        {
+          'icon': 'assets/images/laporan.png',
+          'label': 'Resume Laporan Kandang',
+        },
       ]);
     }
 
@@ -103,6 +112,16 @@ class _HomeViewState extends State<HomeView> {
       Get.toNamed('/situasi');
     } else if (label == 'Monitoring Tamu') {
       Get.toNamed('/tamu');
+    } else if (label == 'Resume Laporan Kandang') {
+      String comid = AppPrefs.getComId() ?? '0';
+      Get.to(
+        () => ResumeKandang(
+          url: '${ApiEndpoint.webviewResumeKandang}/$comid',
+          title: "Resume Kandang",
+        ),
+      );
+    } else if (label == 'Pengaturan') {
+      Get.toNamed('/pengaturan');
     }
   }
 
@@ -139,9 +158,34 @@ class _HomeViewState extends State<HomeView> {
         style: TextStyle(fontWeight: FontWeight.w600, color: Colors.white),
       ),
       actions: [
-        IconButton(
-          icon: const Icon(Icons.notifications_none, color: Colors.white),
-          onPressed: () => Get.toNamed('/notifikasi'),
+        Obx(
+          () => Stack(
+            children: [
+              IconButton(
+                icon: const Icon(
+                  Icons.notifications_outlined,
+                  color: Colors.white,
+                ),
+                onPressed: () {
+                  homeC.clear();
+                  Get.toNamed('/notifikasi');
+                },
+              ),
+              if (homeC.unreadCount.value > 0)
+                Positioned(
+                  right: 8,
+                  top: 8,
+                  child: CircleAvatar(
+                    radius: 9,
+                    backgroundColor: Colors.red,
+                    child: Text(
+                      homeC.unreadCount.value.toString(),
+                      style: const TextStyle(fontSize: 11, color: Colors.white),
+                    ),
+                  ),
+                ),
+            ],
+          ),
         ),
         IconButton(
           icon: const Icon(Icons.logout),
@@ -178,7 +222,7 @@ class _HomeViewState extends State<HomeView> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Welcome back',
+                    'Selamat Datang',
                     style: TextStyle(fontSize: 12, color: Colors.grey),
                   ),
                   const SizedBox(height: 4),
@@ -282,9 +326,9 @@ class _HomeViewState extends State<HomeView> {
   Widget _buildSummarySection() {
     return Row(
       children: const [
-        _SummaryCard(title: 'Satpam Aktif', value: '12'),
+        _SummaryCard(title: 'Satpam Masuk', value: '12'),
         SizedBox(width: 12),
-        _SummaryCard(title: 'Patroli Hari Ini', value: '48'),
+        _SummaryCard(title: 'Satpam Aktif', value: '48'),
       ],
     );
   }

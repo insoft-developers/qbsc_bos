@@ -1,21 +1,40 @@
 {
   "project_info": {
-    "project_number": "1019211117686",
-    "project_id": "qbsc-bos",
-    "storage_bucket": "qbsc-bos.firebasestorage.app"
+    "project_number": "202126552190",
+    "project_id": "qbsc-satpam",
+    "storage_bucket": "qbsc-satpam.firebasestorage.app"
   },
   "client": [
     {
       "client_info": {
-        "mobilesdk_app_id": "1:1019211117686:android:c4dbd10096f06152dd9b57",
+        "mobilesdk_app_id": "1:202126552190:android:a1734e843e29426196fc2f",
         "android_client_info": {
-          "package_name": "com.qbsc.admin"
+          "package_name": "com.qbsc.bos"
         }
       },
       "oauth_client": [],
       "api_key": [
         {
-          "current_key": "AIzaSyAIqHcZQjJ-yK0CdFMsFVVkiQs6aF-yGZU"
+          "current_key": "AIzaSyBok0EYfqPI5u42GdUIL331_m_MbHoBgMw"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    },
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:202126552190:android:2fba7203b848c51f96fc2f",
+        "android_client_info": {
+          "package_name": "com.qbsc.satpam"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyBok0EYfqPI5u42GdUIL331_m_MbHoBgMw"
         }
       ],
       "services": {

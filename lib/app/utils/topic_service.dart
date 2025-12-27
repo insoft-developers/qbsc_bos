@@ -2,6 +2,8 @@ import 'package:firebase_messaging/firebase_messaging.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TopicService {
+  static const String globalTopic = 'qbsc_all';
+
   static Future<void> saveTopic(String topic) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.setString('topic', topic);
@@ -29,9 +31,13 @@ class TopicService {
     await saveTopic(topic);
   }
 
+  /// Panggil saat app start / login
   static Future<void> initializeTopicOnStartup() async {
-    String? topic = await getSavedTopic();
+    // ✅ global topic (selalu aktif)
+    await FirebaseMessaging.instance.subscribeToTopic(globalTopic);
 
+    // ✅ company topic (jika ada)
+    String? topic = await getSavedTopic();
     if (topic != null) {
       await FirebaseMessaging.instance.subscribeToTopic(topic);
       print("🔁 Auto resubscribed topic: $topic");

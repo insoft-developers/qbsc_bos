@@ -9,8 +9,11 @@ class ProfilePage extends StatelessWidget {
 
   final ProfileController c = Get.put(ProfileController());
   final TextEditingController nameC = TextEditingController();
-  final TextEditingController badgeC = TextEditingController();
+  final TextEditingController emailC = TextEditingController();
+  final TextEditingController isActiveC = TextEditingController();
   final TextEditingController waC = TextEditingController();
+  final TextEditingController companyName = TextEditingController();
+  final TextEditingController levelC = TextEditingController();
 
   @override
   Widget build(BuildContext context) {
@@ -31,8 +34,13 @@ class ProfilePage extends StatelessWidget {
 
         /// Set input setelah data load
         nameC.text = c.profileData['name']?.toString() ?? "";
-        badgeC.text = c.profileData['badge_id']?.toString() ?? "";
+        emailC.text = c.profileData['email']?.toString() ?? "";
         waC.text = c.profileData['whatsapp']?.toString() ?? "";
+        isActiveC.text = c.profileData['is_active'] == 1
+            ? 'Aktif'
+            : 'Tidak Aktif';
+        companyName.text = c.profileData['company']['company_name'] ?? '';
+        levelC.text = c.profileData['level'] ?? '';
 
         return SingleChildScrollView(
           padding: const EdgeInsets.all(20),
@@ -41,20 +49,14 @@ class ProfilePage extends StatelessWidget {
               // ==================== HEADER FOTO ====================
               GestureDetector(
                 onTap: () {
-                  Get.snackbar(
-                    'Info',
-                    'Foto profil hanya dapat diubah oleh Administrator',
-                    backgroundColor: Colors.red,
-                    colorText: Colors.white,
-                    snackPosition: SnackPosition.BOTTOM,
-                  );
+                  c.pickFoto();
                 },
                 child: Obx(() {
-                  final faceUrl = c.profileData['face_photo_path'];
+                  final faceUrl = c.profileData['profile_image'];
                   ImageProvider? imgProvider;
 
-                  if (c.imagePath.value.isNotEmpty) {
-                    imgProvider = FileImage(File(c.imagePath.value));
+                  if (c.foto.value != null) {
+                    imgProvider = FileImage(c.foto.value!);
                   } else if (faceUrl != null && faceUrl.toString().isNotEmpty) {
                     imgProvider = NetworkImage(
                       "${ApiProvider.imageUrl}/$faceUrl",
@@ -127,11 +129,11 @@ class ProfilePage extends StatelessWidget {
 
                     // Badge ID
                     TextField(
-                      controller: badgeC,
+                      controller: emailC,
                       readOnly: true,
                       decoration: const InputDecoration(
-                        labelText: "Badge ID",
-                        prefixIcon: Icon(Icons.badge_outlined),
+                        labelText: "Email",
+                        prefixIcon: Icon(Icons.email_outlined),
                         border: OutlineInputBorder(),
                       ),
                     ),
@@ -148,6 +150,47 @@ class ProfilePage extends StatelessWidget {
                         border: OutlineInputBorder(),
                       ),
                     ),
+
+                    const SizedBox(height: 20),
+
+                    // WhatsApp
+                    TextField(
+                      readOnly: true,
+                      controller: isActiveC,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: "Status",
+                        prefixIcon: Icon(Icons.check_box_outlined),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+                    const SizedBox(height: 20),
+
+                    // WhatsApp
+                    TextField(
+                      readOnly: true,
+                      controller: companyName,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: "Perusahaan",
+                        prefixIcon: Icon(Icons.warehouse_outlined),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
+
+                    const SizedBox(height: 20),
+
+                    // WhatsApp
+                    TextField(
+                      readOnly: true,
+                      controller: levelC,
+                      keyboardType: TextInputType.phone,
+                      decoration: const InputDecoration(
+                        labelText: "Level",
+                        prefixIcon: Icon(Icons.star_border_outlined),
+                        border: OutlineInputBorder(),
+                      ),
+                    ),
                   ],
                 ),
               ),
@@ -155,27 +198,40 @@ class ProfilePage extends StatelessWidget {
               const SizedBox(height: 30),
 
               // ==================== BUTTON ====================
-              SizedBox(
-                width: double.infinity,
-                height: 52,
-                child: ElevatedButton.icon(
-                  onPressed: () {
-                    c.saveProfile(nameC.text.trim(), waC.text.trim());
-                  },
-                  icon: const Icon(Icons.save, color: Colors.white),
-                  label: const Text(
-                    "Simpan Perubahan",
-                    style: TextStyle(
-                      color: Colors.white,
-                      fontSize: 16,
-                      fontWeight: FontWeight.w600,
+              Obx(
+                () => SizedBox(
+                  width: double.infinity,
+                  height: 52,
+                  child: ElevatedButton(
+                    onPressed: c.isLoading.value
+                        ? null
+                        : () {
+                            c.saveProfile(nameC.text, waC.text);
+                          },
+                    style: ElevatedButton.styleFrom(
+                      backgroundColor: Colors.black87,
+                      shape: RoundedRectangleBorder(
+                        borderRadius: BorderRadius.circular(14),
+                      ),
                     ),
-                  ),
-                  style: ElevatedButton.styleFrom(
-                    backgroundColor: Colors.black,
-                    shape: RoundedRectangleBorder(
-                      borderRadius: BorderRadius.circular(14),
-                    ),
+                    child: c.isLoading.value
+                        ? const SizedBox(
+                            width: 24,
+                            height: 24,
+                            child: CircularProgressIndicator(
+                              strokeWidth: 3,
+                              color: Colors.white,
+                            ),
+                          )
+                        : const Text(
+                            'Simpan Data',
+                            style: TextStyle(
+                              color: Colors.white,
+                              fontSize: 16,
+                              fontWeight: FontWeight.w600,
+                              letterSpacing: 0.5,
+                            ),
+                          ),
                   ),
                 ),
               ),

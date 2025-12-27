@@ -15,12 +15,10 @@ import 'package:qbsc_saas/app/views/absensi/absensi.dart';
 import 'package:qbsc_saas/app/views/broadcast/broadcast.dart';
 import 'package:qbsc_saas/app/views/doc/doc.dart';
 
-import 'package:qbsc_saas/app/views/emergency/emgergency.dart';
 import 'package:qbsc_saas/app/views/home_view.dart';
 import 'package:qbsc_saas/app/views/kandang/kandang_tab_page.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu.dart';
 import 'package:qbsc_saas/app/views/login_view.dart';
-import 'package:qbsc_saas/app/views/notif/notif.dart';
+import 'package:qbsc_saas/app/views/notifikasi/notifikasi.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli.dart';
 import 'package:qbsc_saas/app/views/pengaturan/password/change_password.dart';
 import 'package:qbsc_saas/app/views/pengaturan/pengaturan.dart';
@@ -99,6 +97,7 @@ class _MyAppState extends State<MyApp> {
       //   INCREMENT BADGE (🔥)
       // ==============================
       homeC.increment();
+      print('foreground notif');
 
       final notif = message.notification;
       final android = notif?.android;
@@ -140,9 +139,9 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/broadcast', page: () => Broadcast()),
         GetPage(name: '/situasi', page: () => SituasiPage()),
         GetPage(name: '/tamu', page: () => TamuPage()),
+
         GetPage(name: '/pengaturan', page: () => Pengaturan()),
-        GetPage(name: '/darurat', page: () => Emgergency()),
-        GetPage(name: '/notifikasi', page: () => Notif()),
+        GetPage(name: '/notifikasi', page: () => Notifikasi()),
         GetPage(name: '/pengaturan/profile', page: () => ProfilePage()),
         GetPage(name: '/pengaturan/password', page: () => ChangePassword()),
       ],

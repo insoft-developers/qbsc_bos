@@ -1,5 +1,9 @@
+import 'dart:io';
+
+import 'package:dio/dio.dart' as dio;
 import 'package:get/get.dart' hide FormData, MultipartFile;
 import 'package:dio/dio.dart';
+import 'package:image_picker/image_picker.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/data/api_endpoint.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
@@ -8,9 +12,13 @@ import 'package:qbsc_saas/app/utils/snackbar_helper.dart';
 class ProfileController extends GetxController {
   var isLoading = false.obs;
   var profileData = <String, dynamic>{}.obs;
+  var imagePath = ''.obs;
 
-  final imagePath = "".obs; // foto lokal kamera
   final api = Get.find<ApiProvider>();
+
+  // ===== FOTO =====
+  Rx<File?> foto = Rx<File?>(null);
+  final picker = ImagePicker();
 
   @override
   void onInit() {
@@ -18,14 +26,21 @@ class ProfileController extends GetxController {
     getProfileData();
   }
 
+  Future pickFoto() async {
+    final img = await picker.pickImage(source: ImageSource.gallery);
+    if (img != null) {
+      foto.value = File(img.path);
+    }
+  }
+
   Future<void> getProfileData() async {
     isLoading.value = true;
-    int satpamId = int.parse(AppPrefs.getUserId() ?? '0');
+    int userid = int.parse(AppPrefs.getUserId() ?? '0');
 
     try {
       final response = await api.post(
         ApiEndpoint.getProfileData,
-        data: {"satpam_id": satpamId},
+        data: {"userid": userid},
       );
 
       if (response.data['success']) {
@@ -41,17 +56,29 @@ class ProfileController extends GetxController {
   }
 
   Future<void> saveProfile(String name, String whatsapp) async {
+    if (name.isEmpty) {
+      SnackbarHelper.error("warning", "nama lengkap tidak boleh kosong!");
+      return;
+    }
+    if (whatsapp.isEmpty) {
+      SnackbarHelper.error("warning", "nomor whatsapp tidak boleh kosong!");
+      return;
+    }
     isLoading.value = true;
-
     try {
       final FormData formData = FormData.fromMap({
-        "satpam_id": profileData['id'],
+        "userid": profileData['id'],
         "name": name,
         "whatsapp": whatsapp,
+        if (foto.value != null)
+          'image': await dio.MultipartFile.fromFile(
+            foto.value!.path,
+            filename: foto.value!.path.split('/').last,
+          ),
       });
 
       final response = await api.post(
-        ApiEndpoint.updateSatpamProfile,
+        ApiEndpoint.updateUserProfile,
         data: formData,
       );
 

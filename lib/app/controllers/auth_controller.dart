@@ -55,6 +55,7 @@ class AuthController extends GetxController {
       final topic = 'qbsc_bos_${comId.value}';
       await TopicService.unsubscribeOldTopic();
       await TopicService.subscribeNewTopic(topic);
+      await TopicService.initializeTopicOnStartup();
 
       Future.delayed(const Duration(milliseconds: 300), () {
         Get.offAllNamed('/home');

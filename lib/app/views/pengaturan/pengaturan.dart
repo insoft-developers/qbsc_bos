@@ -7,7 +7,6 @@ class Pengaturan extends StatelessWidget {
   const Pengaturan({super.key});
 
   final List<Map<String, dynamic>> menuItems = const [
-    {'icon': Icons.location_on, 'label': 'Lokasi'},
     {'icon': Icons.person, 'label': 'Profil'},
     {'icon': Icons.lock_reset, 'label': 'Ubah Password'},
   ];

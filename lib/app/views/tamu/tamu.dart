@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
+import 'package:qbsc_saas/app/views/tamu/add/tamu_add.dart';
 import 'package:qbsc_saas/app/views/tamu/tamu_controller.dart';
 import 'package:qbsc_saas/app/views/tamu/tamu_detail.dart';
 import 'package:qbsc_saas/app/views/tamu/tamu_model.dart';
@@ -244,12 +245,25 @@ class _TamuPageState extends State<TamuPage> {
           ),
         ],
       ),
-      floatingActionButton: FloatingActionButton(
-        backgroundColor: Colors.green,
-        child: const Icon(Icons.refresh, color: Colors.white),
-        onPressed: () {
-          controller.refreshData();
-        },
+      floatingActionButton: Column(
+        mainAxisAlignment: MainAxisAlignment.end,
+        children: [
+          FloatingActionButton(
+            backgroundColor: Colors.green,
+            child: const Icon(Icons.refresh, color: Colors.white),
+            onPressed: () {
+              controller.refreshData();
+            },
+          ),
+          const SizedBox(height: 10),
+          FloatingActionButton(
+            backgroundColor: Colors.blue,
+            child: const Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              Get.to(() => TamuAddPage());
+            },
+          ),
+        ],
       ),
 
       backgroundColor: Colors.white,
