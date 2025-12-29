@@ -75,10 +75,7 @@ class Pengaturan extends StatelessWidget {
                       height: iconSize + 20,
                       decoration: BoxDecoration(
                         gradient: LinearGradient(
-                          colors: [
-                            Colors.indigo.shade400,
-                            Colors.indigo.shade700,
-                          ],
+                          colors: [Colors.black12, Colors.black87],
                           begin: Alignment.topLeft,
                           end: Alignment.bottomRight,
                         ),

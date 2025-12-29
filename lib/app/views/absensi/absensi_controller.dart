@@ -92,7 +92,9 @@ class AbsensiController extends GetxController {
     if (!isMoreDataAvailable.value) return;
 
     isLoading.value = true;
-    int comid = int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
     try {
       final response = await api.post(
@@ -143,7 +145,9 @@ class AbsensiController extends GetxController {
   }
 
   Future<void> fetchSatpam() async {
-    int comid = int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
     final res = await api.post(ApiEndpoint.satpamList, data: {'comid': comid});
 

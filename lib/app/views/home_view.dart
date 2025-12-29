@@ -9,7 +9,11 @@ import 'package:qbsc_saas/app/data/api_endpoint.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/slider/sliderpage_controller.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
+import 'package:qbsc_saas/app/views/home/card_absensi.dart';
+import 'package:qbsc_saas/app/views/home/card_controller.dart';
+import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
+import 'package:qbsc_saas/app/views/user_area/user_area.dart';
 
 class HomeView extends StatefulWidget {
   const HomeView({super.key});
@@ -47,6 +51,7 @@ class _HomeViewState extends State<HomeView> {
     _initMenu();
     _autoSlide();
     _paket.checkPaket();
+    _paket.checkUserArea();
   }
 
   @override
@@ -98,10 +103,15 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _onMenuTap(String label) {
+    final isArea = AppPrefs.getIsUserArea() ?? '0';
     if (label == 'Monitoring Absensi') {
-      Get.toNamed('/absensi');
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'absensi'))
+          : Get.toNamed('/absensi');
     } else if (label == 'Monitoring Patroli') {
-      Get.toNamed('/patroli');
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'patroli'))
+          : Get.toNamed('/patroli');
     } else if (label == 'Monitoring Kandang') {
       Get.toNamed('/kandang');
     } else if (label == 'Lihat Catatan DOC') {
@@ -324,12 +334,22 @@ class _HomeViewState extends State<HomeView> {
 
   // ================= SUMMARY =================
   Widget _buildSummarySection() {
-    return Row(
-      children: const [
-        _SummaryCard(title: 'Satpam Masuk', value: '12'),
-        SizedBox(width: 12),
-        _SummaryCard(title: 'Satpam Aktif', value: '48'),
-      ],
+    final dashboard = Get.put(CardController());
+    return Obx(
+      () => Row(
+        mainAxisAlignment: MainAxisAlignment.spaceBetween,
+        children: [
+          _SummaryCard(
+            title: 'Satpam Masuk',
+            value: dashboard.jumlahAbsensi.toString(),
+          ),
+          SizedBox(width: 12),
+          _SummaryCard(
+            title: 'Satpam Aktif',
+            value: dashboard.jumlahSatpamAktif.toString(),
+          ),
+        ],
+      ),
     );
   }
 
@@ -371,25 +391,37 @@ class _SummaryCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     return Expanded(
-      child: Container(
-        padding: const EdgeInsets.all(16),
-        decoration: BoxDecoration(
-          color: Colors.white,
-          borderRadius: BorderRadius.circular(16),
-        ),
-        child: Column(
-          crossAxisAlignment: CrossAxisAlignment.start,
-          children: [
-            Text(
-              title,
-              style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-            ),
-            const SizedBox(height: 8),
-            Text(
-              value,
-              style: const TextStyle(fontSize: 24, fontWeight: FontWeight.bold),
-            ),
-          ],
+      child: InkWell(
+        onTap: () {
+          if (title == 'Satpam Masuk') {
+            Get.to(() => CardAbsensi());
+          } else if (title == 'Satpam Aktif') {
+            Get.to(() => CardSatpamDetail());
+          }
+        },
+        child: Container(
+          padding: const EdgeInsets.all(16),
+          decoration: BoxDecoration(
+            color: Colors.white,
+            borderRadius: BorderRadius.circular(16),
+          ),
+          child: Column(
+            crossAxisAlignment: CrossAxisAlignment.start,
+            children: [
+              Text(
+                title,
+                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
+              ),
+              const SizedBox(height: 8),
+              Text(
+                value,
+                style: const TextStyle(
+                  fontSize: 24,
+                  fontWeight: FontWeight.bold,
+                ),
+              ),
+            ],
+          ),
         ),
       ),
     );

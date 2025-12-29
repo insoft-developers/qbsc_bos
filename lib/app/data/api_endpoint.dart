@@ -36,4 +36,6 @@ class ApiEndpoint {
 
   static const String checkPaket = '/check_paket';
   static const String changePassword = "$apiPrefix/user_password_change";
+  static const String cardSatpam = "$apiPrefix/card_satpam";
+  static const String cekUserArea = "$apiPrefix/check_user_area";
 }

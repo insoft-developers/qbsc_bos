@@ -18,8 +18,10 @@ class AppPrefs {
   static const String _keyLongitude = 'longitude';
   static const String _keyMaxDistance = 'maxDistance';
   static const String _keyComId = 'comid';
+  static const String _keyComIdMonitoring = 'monComId';
   static const String _keyCompanyName = 'companyName';
   static const String _keyIsPeternakan = 'isPeternakan';
+  static const String _keyIsUserArea = 'isUserArea';
 
   // ------------------ SETTERS ------------------
   static Future setToken(String value) async =>
@@ -49,11 +51,17 @@ class AppPrefs {
   static Future setComId(String value) async =>
       await _prefs.setString(_keyComId, value);
 
+  static Future setMonComId(String value) async =>
+      await _prefs.setString(_keyComIdMonitoring, value);
+
   static Future setCompanyName(String value) async =>
       await _prefs.setString(_keyCompanyName, value);
 
   static Future setIsPeternakan(String value) async =>
       await _prefs.setString(_keyIsPeternakan, value);
+
+  static Future setIsUserArea(String value) async =>
+      await _prefs.setString(_keyIsUserArea, value);
 
   // ------------------ GETTERS ------------------
   static String? getToken() => _prefs.getString(_keyToken);
@@ -74,9 +82,13 @@ class AppPrefs {
 
   static String? getComId() => _prefs.getString(_keyComId);
 
+  static String? getMonComId() => _prefs.getString(_keyComIdMonitoring);
+
   static String? getCompanyName() => _prefs.getString(_keyCompanyName);
 
   static String? getIsPeternakan() => _prefs.getString(_keyIsPeternakan);
+
+  static String? getIsUserArea() => _prefs.getString(_keyIsUserArea);
 
   // ------------------ CLEAR DATA ------------------
   static Future clearAll() async => await _prefs.clear();
