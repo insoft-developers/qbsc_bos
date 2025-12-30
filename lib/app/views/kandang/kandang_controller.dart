@@ -23,7 +23,9 @@ class KandangController extends GetxController {
   final ApiProvider api = Get.find<ApiProvider>();
 
   Future<void> fetchSatpam() async {
-    int comid = int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
     final res = await api.post(ApiEndpoint.satpamList, data: {'comid': comid});
 
@@ -35,7 +37,9 @@ class KandangController extends GetxController {
   }
 
   Future<void> fetchKandang() async {
-    int comid = int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
     final res = await api.post(ApiEndpoint.kandangList, data: {'comid': comid});
 

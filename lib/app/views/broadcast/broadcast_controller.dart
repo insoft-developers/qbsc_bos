@@ -70,7 +70,9 @@ class BroadcastController extends GetxController {
     if (!isMoreDataAvailable.value) return;
 
     isLoading.value = true;
-    int comid = int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
     try {
       final response = await api.post(

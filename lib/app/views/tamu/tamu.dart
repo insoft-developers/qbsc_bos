@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/tamu/add/tamu_add.dart';
 import 'package:qbsc_saas/app/views/tamu/tamu_controller.dart';
@@ -16,6 +17,8 @@ class TamuPage extends StatefulWidget {
 class _TamuPageState extends State<TamuPage> {
   final TamuController controller = Get.put(TamuController());
   final ScrollController scrollController = ScrollController();
+  final myComId = AppPrefs.getComId();
+  final selectedComId = AppPrefs.getMonComId();
 
   @override
   void initState() {
@@ -256,13 +259,15 @@ class _TamuPageState extends State<TamuPage> {
             },
           ),
           const SizedBox(height: 10),
-          FloatingActionButton(
-            backgroundColor: Colors.blue,
-            child: const Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Get.to(() => TamuAddPage());
-            },
-          ),
+          myComId == selectedComId
+              ? FloatingActionButton(
+                  backgroundColor: Colors.blue,
+                  child: const Icon(Icons.add, color: Colors.white),
+                  onPressed: () {
+                    Get.to(() => TamuAddPage());
+                  },
+                )
+              : const SizedBox(),
         ],
       ),
 

@@ -5,8 +5,21 @@ import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/home/card_controller.dart';
 import 'package:qbsc_saas/app/views/home/satpam_absensi_model.dart';
 
-class CardAbsensi extends StatelessWidget {
+class CardAbsensi extends StatefulWidget {
   const CardAbsensi({super.key});
+
+  @override
+  State<CardAbsensi> createState() => _CardAbsensiState();
+}
+
+class _CardAbsensiState extends State<CardAbsensi> {
+  final controller = Get.find<CardController>();
+
+  @override
+  void initState() {
+    controller.fetchSatpam();
+    super.initState();
+  }
 
   @override
   Widget build(BuildContext context) {
@@ -33,6 +46,36 @@ class CardAbsensi extends StatelessWidget {
         // 1️⃣ Loading pertama kali
         return controller.isLoading.value
             ? const Center(child: CircularProgressIndicator())
+            : controller.absensiList.isEmpty
+            ? Center(
+                child: Column(
+                  mainAxisAlignment: MainAxisAlignment.center,
+                  children: [
+                    Icon(
+                      Icons.search_off,
+                      size: 64,
+                      color: Colors.grey.shade400,
+                    ),
+                    const SizedBox(height: 12),
+                    Text(
+                      'Data tidak ditemukan',
+                      style: TextStyle(
+                        fontSize: 16,
+                        fontWeight: FontWeight.w600,
+                        color: Colors.grey.shade600,
+                      ),
+                    ),
+                    const SizedBox(height: 6),
+                    Text(
+                      'Coba ubah filter atau rentang tanggal',
+                      style: TextStyle(
+                        fontSize: 13,
+                        color: Colors.grey.shade500,
+                      ),
+                    ),
+                  ],
+                ),
+              )
             : ListView.builder(
                 padding: const EdgeInsets.all(16),
                 itemCount: controller.absensiList.length,

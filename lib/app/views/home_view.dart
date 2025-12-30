@@ -113,23 +113,38 @@ class _HomeViewState extends State<HomeView> {
           ? Get.to(() => UserArea(menu: 'patroli'))
           : Get.toNamed('/patroli');
     } else if (label == 'Monitoring Kandang') {
-      Get.toNamed('/kandang');
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'kandang'))
+          : Get.toNamed('/kandang');
     } else if (label == 'Lihat Catatan DOC') {
-      Get.toNamed('/doc');
+      // Get.toNamed('/doc');
+
+      isArea == '1' ? Get.to(() => UserArea(menu: 'doc')) : Get.toNamed('/doc');
     } else if (label == 'Buat Broadcast') {
-      Get.toNamed('/broadcast');
+      // Get.toNamed('/broadcast');
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'broadcast'))
+          : Get.toNamed('/broadcast');
     } else if (label == 'Laporan Situasi') {
-      Get.toNamed('/situasi');
+      // Get.toNamed('/situasi');
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'situasi'))
+          : Get.toNamed('/situasi');
     } else if (label == 'Monitoring Tamu') {
-      Get.toNamed('/tamu');
+      // Get.toNamed('/tamu');
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'tamu'))
+          : Get.toNamed('/tamu');
     } else if (label == 'Resume Laporan Kandang') {
       String comid = AppPrefs.getComId() ?? '0';
-      Get.to(
-        () => ResumeKandang(
-          url: '${ApiEndpoint.webviewResumeKandang}/$comid',
-          title: "Resume Kandang",
-        ),
-      );
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'resume'))
+          : Get.to(
+              () => ResumeKandang(
+                url: '${ApiEndpoint.webviewResumeKandang}/$comid',
+                title: "Resume Kandang",
+              ),
+            );
     } else if (label == 'Pengaturan') {
       Get.toNamed('/pengaturan');
     }
@@ -335,6 +350,7 @@ class _HomeViewState extends State<HomeView> {
   // ================= SUMMARY =================
   Widget _buildSummarySection() {
     final dashboard = Get.put(CardController());
+
     return Obx(
       () => Row(
         mainAxisAlignment: MainAxisAlignment.spaceBetween,
@@ -393,10 +409,15 @@ class _SummaryCard extends StatelessWidget {
     return Expanded(
       child: InkWell(
         onTap: () {
+          final isArea = AppPrefs.getIsUserArea() ?? '0';
           if (title == 'Satpam Masuk') {
-            Get.to(() => CardAbsensi());
+            isArea == '1'
+                ? Get.to(() => UserArea(menu: 'card-absensi'))
+                : Get.to(() => CardAbsensi());
           } else if (title == 'Satpam Aktif') {
-            Get.to(() => CardSatpamDetail());
+            isArea == '1'
+                ? Get.to(() => UserArea(menu: 'card-satpam'))
+                : Get.to(() => CardSatpamDetail());
           }
         },
         child: Container(

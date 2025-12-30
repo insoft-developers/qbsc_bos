@@ -18,14 +18,18 @@ class CardController extends GetxController {
 
   @override
   void onInit() {
+    AppPrefs.setMonComId(AppPrefs.getComId() ?? '0');
     fetchSatpam();
+
     super.onInit();
   }
 
   Future<void> fetchSatpam() async {
     satpamList.clear();
     isLoading(true);
-    int comid = int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
     final res = await api.post(ApiEndpoint.cardSatpam, data: {'comid': comid});
 

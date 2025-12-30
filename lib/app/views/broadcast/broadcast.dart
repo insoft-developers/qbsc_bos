@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/broadcast/broadcast_add.dart';
 import 'package:qbsc_saas/app/views/broadcast/broadcast_controller.dart';
@@ -16,6 +17,8 @@ class Broadcast extends StatefulWidget {
 class _BroadcastState extends State<Broadcast> {
   final BroadcastController controller = Get.put(BroadcastController());
   final ScrollController scrollController = ScrollController();
+  final myComId = AppPrefs.getComId();
+  final selectedComId = AppPrefs.getMonComId();
 
   @override
   void initState() {
@@ -195,13 +198,15 @@ class _BroadcastState extends State<Broadcast> {
             },
           ),
           const SizedBox(height: 10),
-          FloatingActionButton(
-            backgroundColor: Colors.blue,
-            child: const Icon(Icons.add, color: Colors.white),
-            onPressed: () {
-              Get.to(() => BroadcastAddPage());
-            },
-          ),
+          myComId == selectedComId
+              ? FloatingActionButton(
+                  backgroundColor: Colors.blue,
+                  child: const Icon(Icons.add, color: Colors.white),
+                  onPressed: () {
+                    Get.to(() => BroadcastAddPage());
+                  },
+                )
+              : const SizedBox(),
         ],
       ),
 

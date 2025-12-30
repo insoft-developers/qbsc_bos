@@ -1,8 +1,12 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/controllers/paket_controller.dart';
+import 'package:qbsc_saas/app/data/api_endpoint.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/views/absensi/absensi.dart';
+import 'package:qbsc_saas/app/views/home/card_absensi.dart';
+import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
+import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area_model.dart';
 
@@ -51,9 +55,31 @@ class UserArea extends StatelessWidget {
                         );
 
                         if (menu == 'absensi') {
-                          Get.to((Absensi()));
+                          Get.toNamed('/absensi');
                         } else if (menu == 'patroli') {
-                          Get.to((Patroli()));
+                          Get.toNamed('/patroli');
+                        } else if (menu == 'kandang') {
+                          Get.toNamed('/kandang');
+                        } else if (menu == 'doc') {
+                          Get.toNamed('/doc');
+                        } else if (menu == 'situasi') {
+                          Get.toNamed('/situasi');
+                        } else if (menu == 'broadcast') {
+                          Get.toNamed('/broadcast');
+                        } else if (menu == 'tamu') {
+                          Get.toNamed('/tamu');
+                        } else if (menu == 'resume') {
+                          String comid = AppPrefs.getMonComId().toString();
+                          Get.to(
+                            () => ResumeKandang(
+                              url: '${ApiEndpoint.webviewResumeKandang}/$comid',
+                              title: "Resume Kandang",
+                            ),
+                          );
+                        } else if (menu == 'card-absensi') {
+                          Get.to(() => CardAbsensi());
+                        } else if (menu == 'card-satpam') {
+                          Get.to(() => CardSatpamDetail());
                         }
                       },
                       child: Card(
@@ -96,10 +122,9 @@ class UserArea extends StatelessWidget {
               crossAxisAlignment: CrossAxisAlignment.start,
               children: [
                 Text(
-                  name,
-                  maxLines: 1,
+                  name.toUpperCase(),
                   style: const TextStyle(
-                    fontSize: 14,
+                    fontSize: 15,
                     fontWeight: FontWeight.w600,
                   ),
                 ),
