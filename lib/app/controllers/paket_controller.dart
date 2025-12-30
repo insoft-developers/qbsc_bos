@@ -10,6 +10,9 @@ class PaketController extends GetxController {
   var isLoading = false.obs;
   var isArea = ''.obs;
   var areaList = <UserAreaModel>[].obs;
+  var isMobileApp = 0.obs;
+  var expiredDate = ''.obs;
+  var paketAktif = <String, dynamic>{}.obs;
 
   final ApiProvider api = Get.find<ApiProvider>();
 
@@ -29,6 +32,17 @@ class PaketController extends GetxController {
 
       var body = response.data;
       if (body['success']) {
+        isMobileApp.value = body['is_mobile_app'];
+        expiredDate.value = body['expired_date'];
+        paketAktif.value = body['data'];
+
+        if (isMobileApp.value != 1) {
+          SnackbarHelper.error(
+            'warning',
+            'Paket anda tidak mendukung untuk penggunaan Mobile Apps. Silahkan upgrade paket anda.',
+          );
+          Get.to(() => Paket());
+        }
       } else {
         Get.to(() => Paket());
       }
@@ -64,7 +78,7 @@ class PaketController extends GetxController {
         SnackbarHelper.error('Warning', body['message'].toString());
       }
     } catch (e) {
-      SnackbarHelper.error('Warning', e.toString());
+      // SnackbarHelper.error('Warning', e.toString());
     } finally {
       isLoading(false);
     }

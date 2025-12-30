@@ -11,6 +11,7 @@ import 'package:qbsc_saas/app/slider/sliderpage_controller.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/views/home/card_absensi.dart';
 import 'package:qbsc_saas/app/views/home/card_controller.dart';
+import 'package:qbsc_saas/app/views/home/card_paket.dart';
 import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
@@ -162,8 +163,11 @@ class _HomeViewState extends State<HomeView> {
             _buildProfileCard(),
             const SizedBox(height: 20),
             _buildImageSlider(),
+            const SizedBox(height: 14),
+            PaketCard(),
             const SizedBox(height: 24),
             _buildSummarySection(),
+
             const SizedBox(height: 24),
             _buildMonitoringMenu(),
             const SizedBox(height: 44),

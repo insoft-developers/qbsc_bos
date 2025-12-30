@@ -17,11 +17,6 @@ class AuthController extends GetxController {
 
   final ApiProvider api = Get.find<ApiProvider>();
 
-  @override
-  void onInit() {
-    super.onInit();
-  }
-
   // =========================
   // LOGIN
   // =========================
