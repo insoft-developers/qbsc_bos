@@ -178,23 +178,31 @@ class AbsensiDetail extends StatelessWidget {
                   const SizedBox(height: 12),
 
                   Row(
-                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
                     children: [
-                      if (data.fotoMasuk!.isNotEmpty)
-                        _buildFoto(
-                          "${ApiProvider.imageUrl}/${data.fotoMasuk}",
-                          'Masuk',
-                        ),
+                      // FOTO MASUK
+                      Expanded(
+                        child:
+                            data.fotoMasuk != null && data.fotoMasuk!.isNotEmpty
+                            ? _buildFotoFull(
+                                "${ApiProvider.imageUrl}/${data.fotoMasuk}",
+                                'Masuk',
+                              )
+                            : _fotoKosong('Masuk'),
+                      ),
 
-                      if (data.fotoMasuk!.isNotEmpty ||
-                          data.fotoKeluar!.isNotEmpty)
-                        const SizedBox(width: 12),
+                      const SizedBox(width: 8),
 
-                      if (data.fotoKeluar!.isNotEmpty)
-                        _buildFoto(
-                          "${ApiProvider.imageUrl}/${data.fotoKeluar}",
-                          'Pulang',
-                        ),
+                      // FOTO PULANG
+                      Expanded(
+                        child:
+                            data.fotoKeluar != null &&
+                                data.fotoKeluar!.isNotEmpty
+                            ? _buildFotoFull(
+                                "${ApiProvider.imageUrl}/${data.fotoKeluar}",
+                                'Pulang',
+                              )
+                            : _fotoKosong('Pulang'),
+                      ),
                     ],
                   ),
                   const SizedBox(height: 12),
@@ -285,41 +293,55 @@ class AbsensiDetail extends StatelessWidget {
   }
 }
 
-Widget _buildFoto(String url, String label) {
+Widget _buildFotoFull(String url, String label) {
   return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
     children: [
-      ClipOval(
-        child: Image.network(
-          url,
-          width: 106,
-          height: 106,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Container(
-            width: 56,
-            height: 56,
-            color: Colors.grey.shade300,
-            child: const Icon(Icons.broken_image, size: 24),
+      Text(
+        label,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+      ),
+      const SizedBox(height: 6),
+      ClipRRect(
+        borderRadius: BorderRadius.circular(12),
+        child: AspectRatio(
+          aspectRatio: 1, // kotak, bisa diganti 4/5
+          child: Image.network(
+            url,
+            width: double.infinity,
+            fit: BoxFit.cover,
+            errorBuilder: (_, __, ___) => Container(
+              color: Colors.grey.shade300,
+              child: const Icon(Icons.broken_image, size: 40),
+            ),
+            loadingBuilder: (context, child, progress) {
+              if (progress == null) return child;
+              return const Center(child: CircularProgressIndicator());
+            },
           ),
-          loadingBuilder: (context, child, progress) {
-            if (progress == null) return child;
-            return SizedBox(
-              width: 56,
-              height: 56,
-              child: Center(
-                child: CircularProgressIndicator(
-                  strokeWidth: 2,
-                  value: progress.expectedTotalBytes != null
-                      ? progress.cumulativeBytesLoaded /
-                            progress.expectedTotalBytes!
-                      : null,
-                ),
-              ),
-            );
-          },
         ),
       ),
-      const SizedBox(height: 4),
-      Text(label, style: const TextStyle(fontSize: 10)),
+    ],
+  );
+}
+
+Widget _fotoKosong(String label) {
+  return Column(
+    crossAxisAlignment: CrossAxisAlignment.start,
+    children: [
+      Text(
+        label,
+        style: const TextStyle(fontSize: 12, fontWeight: FontWeight.w600),
+      ),
+      const SizedBox(height: 6),
+      Container(
+        height: 160,
+        decoration: BoxDecoration(
+          color: Colors.grey.shade200,
+          borderRadius: BorderRadius.circular(12),
+        ),
+        child: const Center(child: Icon(Icons.image_not_supported, size: 40)),
+      ),
     ],
   );
 }

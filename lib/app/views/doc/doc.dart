@@ -1,5 +1,8 @@
+import 'dart:convert';
+
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/doc/doc_controller.dart';
 import 'package:qbsc_saas/app/views/doc/doc_detail.dart';
@@ -295,8 +298,8 @@ class _DocPageState extends State<DocPage> {
           itemBuilder: (context, index) {
             if (index < controller.docList.length) {
               final DocModel dataShow = controller.docList[index];
-
-              String jenisDoc = dataShow.jenis == 1 ? 'Male' : 'Female';
+              final fotos = parseFotoDynamic(dataShow.foto);
+              final boxOptions = parseDocBoxOption(dataShow.docBoxOptionJson);
 
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
@@ -315,8 +318,8 @@ class _DocPageState extends State<DocPage> {
                           "${Fungsi.tanggalIndo(dataShow.tanggal)} - ${dataShow.jam}",
                         ),
                         _buildRow(
-                          "Jumlah Box/Jenis",
-                          "${dataShow.jumlah.toString()} Box - ${jenisDoc}",
+                          "Jumlah Box/Total Ekor",
+                          "${dataShow.jumlah} Box - ${dataShow.totalEkor} Ekor",
                         ),
                         _buildRow(
                           "Ekspedisi/Satpam",
@@ -326,6 +329,86 @@ class _DocPageState extends State<DocPage> {
                           "No Polisi/Tujuan",
                           "${dataShow.noPolisi} - ${dataShow.tujuan}",
                         ),
+
+                        // ===== DETAIL BOX =====
+                        if (boxOptions.isNotEmpty) ...[
+                          const SizedBox(height: 10),
+                          Text(
+                            'Detail Box',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          Column(
+                            children: boxOptions.map((opt) {
+                              return Padding(
+                                padding: const EdgeInsets.only(bottom: 4),
+                                child: Row(
+                                  children: [
+                                    const Icon(
+                                      Icons.inventory,
+                                      size: 14,
+                                      color: Colors.blue,
+                                    ),
+                                    const SizedBox(width: 6),
+                                    Expanded(
+                                      child: Text(
+                                        '${opt['option_name']} • '
+                                        '${opt['jumlah_box']} box × '
+                                        '${opt['isi']} = '
+                                        '${opt['total_ekor']} ekor',
+                                        style: const TextStyle(
+                                          fontSize: 12.5,
+                                          fontWeight: FontWeight.w500,
+                                        ),
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              );
+                            }).toList(),
+                          ),
+                        ],
+
+                        // ===== FOTO =====
+                        if (fotos.isNotEmpty) ...[
+                          const SizedBox(height: 12),
+                          Text(
+                            'Foto',
+                            style: TextStyle(
+                              fontSize: 12,
+                              fontWeight: FontWeight.w600,
+                              color: Colors.grey.shade700,
+                            ),
+                          ),
+                          const SizedBox(height: 6),
+                          SizedBox(
+                            height: 64,
+                            child: ListView.separated(
+                              scrollDirection: Axis.horizontal,
+                              itemCount: fotos.length,
+                              separatorBuilder: (_, __) =>
+                                  const SizedBox(width: 8),
+                              itemBuilder: (context, i) {
+                                return ClipRRect(
+                                  borderRadius: BorderRadius.circular(10),
+                                  child: Image.network(
+                                    "${ApiProvider.imageUrl}/${fotos[i]}",
+                                    width: 64,
+                                    height: 64,
+                                    fit: BoxFit.cover,
+                                    errorBuilder: (_, __, ___) =>
+                                        const Icon(Icons.broken_image),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        ],
+
                         _buildRow("Catatan", dataShow.note ?? ''),
                       ],
                     ),
@@ -373,5 +456,37 @@ class _DocPageState extends State<DocPage> {
         ],
       ),
     );
+  }
+}
+
+// ===== FOTO PARSER (STRING / JSON ARRAY) =====
+List<String> parseFotoDynamic(dynamic foto) {
+  if (foto == null) return [];
+
+  if (foto is List) {
+    return foto.map((e) => e.toString()).toList();
+  }
+
+  if (foto is String && foto.isNotEmpty) {
+    if (foto.trim().startsWith('[')) {
+      try {
+        final List list = jsonDecode(foto);
+        return list.map((e) => e.toString()).toList();
+      } catch (_) {}
+    }
+    return [foto];
+  }
+
+  return [];
+}
+
+// ===== DETAIL BOX PARSER =====
+List<Map<String, dynamic>> parseDocBoxOption(String? jsonStr) {
+  if (jsonStr == null || jsonStr.isEmpty) return [];
+  try {
+    final List list = jsonDecode(jsonStr);
+    return list.cast<Map<String, dynamic>>();
+  } catch (_) {
+    return [];
   }
 }

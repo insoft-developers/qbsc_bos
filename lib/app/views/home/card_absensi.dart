@@ -13,7 +13,7 @@ class CardAbsensi extends StatefulWidget {
 }
 
 class _CardAbsensiState extends State<CardAbsensi> {
-  final controller = Get.find<CardController>();
+  final controller = Get.put(CardController());
 
   @override
   void initState() {

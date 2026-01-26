@@ -1,20 +1,19 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
-import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
-import 'package:qbsc_saas/app/views/absensi/absensi_controller.dart';
-import 'package:qbsc_saas/app/views/absensi/absensi_detail.dart';
-import 'package:qbsc_saas/app/views/absensi/absensi_model.dart';
+import 'package:qbsc_saas/app/views/tracking/rute/map/map.dart';
+import 'package:qbsc_saas/app/views/tracking/rute/rute_controller.dart';
+import 'package:qbsc_saas/app/views/tracking/rute/rute_model.dart';
 
-class Absensi extends StatefulWidget {
-  const Absensi({super.key});
+class RutePage extends StatefulWidget {
+  const RutePage({super.key});
 
   @override
-  State<Absensi> createState() => _AbsensiState();
+  State<RutePage> createState() => _RutePageState();
 }
 
-class _AbsensiState extends State<Absensi> {
-  final AbsensiController controller = Get.put(AbsensiController());
+class _RutePageState extends State<RutePage> {
+  final RuteController controller = Get.put(RuteController());
   final ScrollController scrollController = ScrollController();
 
   @override
@@ -28,7 +27,7 @@ class _AbsensiState extends State<Absensi> {
             scrollController.position.maxScrollExtent - 200 &&
         controller.isMoreDataAvailable.value &&
         !controller.isLoading.value) {
-      controller.getDataAbsensi(loadMore: true);
+      controller.featchRute(loadMore: true);
     }
   }
 
@@ -43,7 +42,6 @@ class _AbsensiState extends State<Absensi> {
   // =========================
   void _showFilterBottomSheet() {
     int? selectedSatpamId = controller.selectedSatpamId.value;
-    String? selectedStatus = controller.status.value;
     DateTime? startDate;
     DateTime? endDate;
 
@@ -68,7 +66,7 @@ class _AbsensiState extends State<Absensi> {
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
                   const Text(
-                    'Filter Absensi',
+                    'Filter Tracking Satpam',
                     style: TextStyle(fontSize: 18, fontWeight: FontWeight.bold),
                   ),
                   const SizedBox(height: 16),
@@ -156,25 +154,6 @@ class _AbsensiState extends State<Absensi> {
                   }),
 
                   const SizedBox(height: 12),
-
-                  // ===== FILTER STATUS =====
-                  DropdownButtonFormField<String>(
-                    value: selectedStatus,
-                    decoration: const InputDecoration(
-                      labelText: 'Status',
-                      border: OutlineInputBorder(),
-                    ),
-                    items: const [
-                      DropdownMenuItem(value: '1', child: Text('Masuk')),
-                      DropdownMenuItem(value: '2', child: Text('Pulang')),
-                    ],
-                    onChanged: (val) {
-                      setState(() => selectedStatus = val);
-                    },
-                  ),
-
-                  const SizedBox(height: 20),
-
                   // ===== ACTION =====
                   Row(
                     children: [
@@ -198,7 +177,6 @@ class _AbsensiState extends State<Absensi> {
                               ),
                               end: endDate?.toIso8601String().substring(0, 10),
                               satpamId: selectedSatpamId,
-                              statusValue: selectedStatus,
                             );
                             Navigator.pop(context);
                           },
@@ -225,7 +203,7 @@ class _AbsensiState extends State<Absensi> {
       appBar: AppBar(
         backgroundColor: const Color(0xFF0F172A),
         title: const Text(
-          'Monitoring Absensi',
+          'Tracking Rute Patroli',
           style: TextStyle(color: Colors.white),
         ),
         iconTheme: const IconThemeData(color: Colors.white),
@@ -247,12 +225,12 @@ class _AbsensiState extends State<Absensi> {
       backgroundColor: Colors.white,
       body: Obx(() {
         // 1️⃣ Loading pertama kali
-        if (controller.isLoading.value && controller.absensiList.isEmpty) {
+        if (controller.isLoading.value && controller.ruteList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
 
         // 2️⃣ Data kosong (hasil filter tidak ada)
-        if (!controller.isLoading.value && controller.absensiList.isEmpty) {
+        if (!controller.isLoading.value && controller.ruteList.isEmpty) {
           return Center(
             child: Column(
               mainAxisAlignment: MainAxisAlignment.center,
@@ -260,7 +238,7 @@ class _AbsensiState extends State<Absensi> {
                 Icon(Icons.search_off, size: 64, color: Colors.grey.shade400),
                 const SizedBox(height: 12),
                 Text(
-                  'Data absensi tidak ditemukan',
+                  'Data tidak ditemukan',
                   style: TextStyle(
                     fontSize: 16,
                     fontWeight: FontWeight.w600,
@@ -282,20 +260,17 @@ class _AbsensiState extends State<Absensi> {
           controller: scrollController,
           padding: const EdgeInsets.all(16),
           itemCount:
-              controller.absensiList.length +
+              controller.ruteList.length +
               (controller.isMoreDataAvailable.value ? 1 : 0),
           itemBuilder: (context, index) {
-            if (index < controller.absensiList.length) {
-              final AbsensiModel absensi = controller.absensiList[index];
-
-              String catatanStatus = absensi.status == 1
-                  ? "Masuk - ${absensi.catatanMasuk ?? ''}"
-                  : "Pulang - ${absensi.catatanMasuk ?? ''} - ${absensi.catatanKeluar ?? ''}";
+            if (index < controller.ruteList.length) {
+              final RuteModel dataShow = controller.ruteList[index];
 
               return InkWell(
                 borderRadius: BorderRadius.circular(12),
                 onTap: () {
-                  Get.to(() => AbsensiDetail(data: absensi));
+                  // Get.to(() => SituasiDetail(data: dataShow));
+                  Get.to(() => TrackingMap(absensiId: dataShow.id));
                 },
                 child: Card(
                   margin: const EdgeInsets.symmetric(vertical: 8),
@@ -304,56 +279,16 @@ class _AbsensiState extends State<Absensi> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        _buildRow("Satpam", dataShow.satpamName.toUpperCase()),
                         _buildRow(
-                          "Tanggal / Satpam",
-                          "${Fungsi.tanggalIndo(absensi.tanggal)} - ${absensi.namaSatpam}",
-                        ),
-                        _buildRow(
-                          "Shift / Jam Masuk / Pulang",
-                          "${absensi.shiftName} - ${Fungsi.formatToTime(absensi.jamMasuk)} - ${Fungsi.formatToTime(absensi.jamKeluar ?? '')}",
-                        ),
-                        _buildRow(
-                          "Status",
-                          absensi.status == 1 ? 'MASUK' : 'PULANG',
-                        ),
-                        _buildRow(
-                          "Catatan Masuk / Catatan Pulang",
-                          "${absensi.catatanMasuk ?? '-'} | ${absensi.catatanKeluar ?? '-'}",
+                          "Jam Masuk / Jam Pulang",
+                          "${Fungsi.formatDateTime(dataShow.jamMasuk)} - ${Fungsi.formatDateTime(dataShow.jamPulang)}",
                         ),
 
-                        const SizedBox(height: 12),
-
-                        if ((absensi.fotoMasuk?.isNotEmpty ?? false) ||
-                            (absensi.fotoKeluar?.isNotEmpty ?? false))
-                          Row(
-                            children: [
-                              // =====================
-                              // FOTO MASUK
-                              // =====================
-                              if (absensi.fotoMasuk?.isNotEmpty ?? false)
-                                Expanded(
-                                  child: _buildFotoFull(
-                                    "${ApiProvider.imageUrl}/${absensi.fotoMasuk}",
-                                    'MASUK',
-                                  ),
-                                ),
-
-                              if ((absensi.fotoMasuk?.isNotEmpty ?? false) &&
-                                  (absensi.fotoKeluar?.isNotEmpty ?? false))
-                                const SizedBox(width: 8),
-
-                              // =====================
-                              // FOTO PULANG
-                              // =====================
-                              if (absensi.fotoKeluar?.isNotEmpty ?? false)
-                                Expanded(
-                                  child: _buildFotoFull(
-                                    "${ApiProvider.imageUrl}/${absensi.fotoKeluar}",
-                                    'PULANG',
-                                  ),
-                                ),
-                            ],
-                          ),
+                        _buildRow(
+                          "Perusahaan",
+                          limitWords(dataShow.comName, 25),
+                        ),
                       ],
                     ),
                   ),
@@ -403,43 +338,8 @@ class _AbsensiState extends State<Absensi> {
   }
 }
 
-Widget _buildFotoFull(String url, String label) {
-  return Column(
-    crossAxisAlignment: CrossAxisAlignment.start,
-    children: [
-      Text(
-        label,
-        style: TextStyle(
-          fontSize: 11,
-          fontWeight: FontWeight.w600,
-          color: Colors.grey.shade600,
-        ),
-      ),
-      const SizedBox(height: 6),
-      ClipRRect(
-        borderRadius: BorderRadius.circular(10),
-        child: Image.network(
-          url,
-          width: double.infinity,
-          height: 140,
-          fit: BoxFit.cover,
-          errorBuilder: (_, __, ___) => Container(
-            height: 140,
-            color: Colors.grey.shade300,
-            child: const Center(child: Icon(Icons.broken_image)),
-          ),
-          loadingBuilder: (context, child, progress) {
-            if (progress == null) return child;
-            return Container(
-              height: 140,
-              color: Colors.grey.shade200,
-              child: const Center(
-                child: CircularProgressIndicator(strokeWidth: 2),
-              ),
-            );
-          },
-        ),
-      ),
-    ],
-  );
+String limitWords(String text, int maxWords) {
+  final words = text.split(RegExp(r'\s+'));
+  if (words.length <= maxWords) return text;
+  return '${words.take(maxWords).join(' ')}...';
 }

@@ -12,7 +12,7 @@ class CardSatpamDetail extends StatefulWidget {
 }
 
 class _CardSatpamDetailState extends State<CardSatpamDetail> {
-  final controller = Get.find<CardController>();
+  final controller = Get.put(CardController());
 
   @override
   void initState() {

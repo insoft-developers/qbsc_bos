@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 
 class ApiProvider extends GetxService {
-  static const String appVersion = "1.0.1";
+  static const String appVersion = "1.0.2";
 
   static const bool isDev = false;
   static const String devUrl = "http://192.168.100.3:8000";

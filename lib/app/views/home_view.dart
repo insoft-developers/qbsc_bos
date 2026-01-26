@@ -13,7 +13,9 @@ import 'package:qbsc_saas/app/views/home/card_absensi.dart';
 import 'package:qbsc_saas/app/views/home/card_controller.dart';
 import 'package:qbsc_saas/app/views/home/card_paket.dart';
 import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
+import 'package:qbsc_saas/app/views/kinerja/kinerja.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
+import 'package:qbsc_saas/app/views/tracking/tracking.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
 
 class HomeView extends StatefulWidget {
@@ -168,6 +170,8 @@ class _HomeViewState extends State<HomeView> {
             PaketCard(),
             const SizedBox(height: 24),
             _buildSummarySection(),
+            const SizedBox(height: 14),
+            _buildKinerjaSection(),
 
             const SizedBox(height: 24),
             _buildMonitoringMenu(),
@@ -232,43 +236,98 @@ class _HomeViewState extends State<HomeView> {
       final photo = "${ApiProvider.imageUrl}/${authC.userPhoto.value}";
 
       return Container(
-        padding: const EdgeInsets.all(18),
+        padding: const EdgeInsets.all(20),
         decoration: BoxDecoration(
           color: Colors.white,
-          borderRadius: BorderRadius.circular(18),
+          borderRadius: BorderRadius.circular(20),
+          boxShadow: [
+            BoxShadow(
+              color: Colors.black.withOpacity(0.04),
+              blurRadius: 10,
+              offset: const Offset(0, 6),
+            ),
+          ],
         ),
         child: Row(
           children: [
-            CircleAvatar(
-              radius: 30,
-              backgroundImage: authC.userPhoto.value.isNotEmpty
-                  ? NetworkImage(photo)
-                  : const AssetImage('assets/images/satpam_default.png')
-                        as ImageProvider,
+            // AVATAR
+            Container(
+              padding: const EdgeInsets.all(2),
+              decoration: BoxDecoration(
+                shape: BoxShape.circle,
+                border: Border.all(color: const Color(0xFF34C759), width: 2),
+              ),
+              child: CircleAvatar(
+                radius: 28,
+                backgroundImage: authC.userPhoto.value.isNotEmpty
+                    ? NetworkImage(photo)
+                    : const AssetImage('assets/images/satpam_default.png')
+                          as ImageProvider,
+              ),
             ),
-            const SizedBox(width: 14),
+
+            const SizedBox(width: 16),
+
+            // USER INFO
             Expanded(
               child: Column(
                 crossAxisAlignment: CrossAxisAlignment.start,
                 children: [
-                  const Text(
-                    'Selamat Datang',
-                    style: TextStyle(fontSize: 12, color: Colors.grey),
+                  // WELCOME
+                  Row(
+                    children: const [
+                      Icon(
+                        Icons.waving_hand_outlined,
+                        size: 14,
+                        color: Colors.grey,
+                      ),
+                      SizedBox(width: 6),
+                      Text(
+                        'Selamat Datang',
+                        style: TextStyle(
+                          fontSize: 12,
+                          color: Colors.grey,
+                          fontWeight: FontWeight.w500,
+                        ),
+                      ),
+                    ],
                   ),
-                  const SizedBox(height: 4),
+
+                  const SizedBox(height: 6),
+
+                  // USER NAME
                   Text(
                     AppPrefs.getUserName() ?? '-',
                     style: const TextStyle(
                       fontSize: 18,
-                      fontWeight: FontWeight.w600,
+                      fontWeight: FontWeight.w700,
+                      color: Colors.black87,
                     ),
                   ),
-                  Text(
-                    AppPrefs.getCompanyName() ?? '-',
-                    style: const TextStyle(
-                      fontSize: 13,
-                      color: Color(0xFF34C759),
-                    ),
+
+                  const SizedBox(height: 4),
+
+                  // COMPANY
+                  Row(
+                    children: [
+                      const Icon(
+                        Icons.business_outlined,
+                        size: 14,
+                        color: Color(0xFF34C759),
+                      ),
+                      const SizedBox(width: 6),
+                      Expanded(
+                        child: Text(
+                          AppPrefs.getCompanyName() ?? '-',
+                          style: const TextStyle(
+                            fontSize: 13,
+                            color: Color(0xFF34C759),
+                            fontWeight: FontWeight.w600,
+                          ),
+                          overflow: TextOverflow.ellipsis,
+                        ),
+                      ),
+                    ],
                   ),
                 ],
               ),
@@ -354,23 +413,38 @@ class _HomeViewState extends State<HomeView> {
 
   // ================= SUMMARY =================
   Widget _buildSummarySection() {
-    final dashboard = Get.put(CardController());
+    return Row(
+      children: const [
+        _SummaryCard(
+          title: 'Satpam Masuk',
+          icon: Icons.login_rounded,
+          color: Color(0xFF34C759),
+        ),
+        SizedBox(width: 12),
+        _SummaryCard(
+          title: 'Satpam Aktif',
+          icon: Icons.security_rounded,
+          color: Color(0xFF0F172A),
+        ),
+      ],
+    );
+  }
 
-    return Obx(
-      () => Row(
-        mainAxisAlignment: MainAxisAlignment.spaceBetween,
-        children: [
-          _SummaryCard(
-            title: 'Satpam Masuk',
-            value: dashboard.jumlahAbsensi.toString(),
-          ),
-          SizedBox(width: 12),
-          _SummaryCard(
-            title: 'Satpam Aktif',
-            value: dashboard.jumlahSatpamAktif.toString(),
-          ),
-        ],
-      ),
+  Widget _buildKinerjaSection() {
+    return Row(
+      children: const [
+        _SummaryCard(
+          title: 'Laporan Kinerja',
+          icon: Icons.analytics,
+          color: Color.fromARGB(255, 66, 84, 218),
+        ),
+        SizedBox(width: 12),
+        _SummaryCard(
+          title: 'Tracking',
+          icon: Icons.location_pin,
+          color: Color.fromARGB(255, 239, 96, 148),
+        ),
+      ],
     );
   }
 
@@ -405,45 +479,77 @@ class _HomeViewState extends State<HomeView> {
 // ================= COMPONENTS =================
 class _SummaryCard extends StatelessWidget {
   final String title;
-  final String value;
+  final IconData icon;
+  final Color color;
 
-  const _SummaryCard({required this.title, required this.value});
+  const _SummaryCard({
+    required this.title,
+    required this.icon,
+    required this.color,
+  });
+
+  void _handleTap() {
+    final isArea = AppPrefs.getIsUserArea() ?? '0';
+
+    if (title == 'Satpam Masuk') {
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'card-absensi'))
+          : Get.to(() => CardAbsensi());
+    } else if (title == 'Satpam Aktif') {
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'card-satpam'))
+          : Get.to(() => CardSatpamDetail());
+    } else if (title == 'Laporan Kinerja') {
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'laporan-kinerja'))
+          : Get.to(() => Kinerja());
+    } else if (title == 'Tracking') {
+      Get.to(() => Tracking());
+    }
+  }
 
   @override
   Widget build(BuildContext context) {
     return Expanded(
       child: InkWell(
-        onTap: () {
-          final isArea = AppPrefs.getIsUserArea() ?? '0';
-          if (title == 'Satpam Masuk') {
-            isArea == '1'
-                ? Get.to(() => UserArea(menu: 'card-absensi'))
-                : Get.to(() => CardAbsensi());
-          } else if (title == 'Satpam Aktif') {
-            isArea == '1'
-                ? Get.to(() => UserArea(menu: 'card-satpam'))
-                : Get.to(() => CardSatpamDetail());
-          }
-        },
+        borderRadius: BorderRadius.circular(18),
+        onTap: _handleTap,
         child: Container(
-          padding: const EdgeInsets.all(16),
+          padding: const EdgeInsets.symmetric(vertical: 22),
           decoration: BoxDecoration(
             color: Colors.white,
-            borderRadius: BorderRadius.circular(16),
+            borderRadius: BorderRadius.circular(18),
+            boxShadow: [
+              BoxShadow(
+                color: Colors.black.withOpacity(0.04),
+                blurRadius: 10,
+                offset: const Offset(0, 6),
+              ),
+            ],
           ),
           child: Column(
-            crossAxisAlignment: CrossAxisAlignment.start,
+            mainAxisAlignment: MainAxisAlignment.center,
             children: [
+              // ICON BESAR
+              Container(
+                padding: const EdgeInsets.all(16),
+                decoration: BoxDecoration(
+                  color: color.withOpacity(0.12),
+                  shape: BoxShape.circle,
+                ),
+                child: Icon(icon, size: 34, color: color),
+              ),
+
+              const SizedBox(height: 14),
+
+              // TITLE
               Text(
                 title,
-                style: TextStyle(fontSize: 12, color: Colors.grey.shade600),
-              ),
-              const SizedBox(height: 8),
-              Text(
-                value,
+                textAlign: TextAlign.center,
                 style: const TextStyle(
-                  fontSize: 24,
-                  fontWeight: FontWeight.bold,
+                  fontSize: 14,
+                  fontWeight: FontWeight.w600,
+                  color: Colors.black87,
                 ),
               ),
             ],
