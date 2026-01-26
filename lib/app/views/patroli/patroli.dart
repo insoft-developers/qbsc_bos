@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli_controller.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli_detail.dart';
-import 'package:qbsc_saas/app/views/patroli/patroli_model.dart';
 
 class Patroli extends StatefulWidget {
   const Patroli({super.key});
@@ -41,10 +41,17 @@ class _PatroliState extends State<Patroli> {
   // FILTER BOTTOM SHEET
   // =========================
   void _showFilterBottomSheet() {
+    // 🔥 ambil state awal dari controller
     int? selectedSatpamId = controller.selectedSatpamId.value;
     int? selectedLocationId = controller.selectedLocationId.value;
-    DateTime? startDate;
-    DateTime? endDate;
+
+    DateTime? startDate = controller.startDate.value != null
+        ? DateTime.parse(controller.startDate.value!)
+        : null;
+
+    DateTime? endDate = controller.endDate.value != null
+        ? DateTime.parse(controller.endDate.value!)
+        : null;
 
     showModalBottomSheet(
       context: context,
@@ -80,7 +87,7 @@ class _PatroliState extends State<Patroli> {
                           onPressed: () async {
                             final date = await showDatePicker(
                               context: context,
-                              initialDate: DateTime.now(),
+                              initialDate: startDate ?? DateTime.now(),
                               firstDate: DateTime(2020),
                               lastDate: DateTime.now(),
                             );
@@ -106,7 +113,7 @@ class _PatroliState extends State<Patroli> {
                           onPressed: () async {
                             final date = await showDatePicker(
                               context: context,
-                              initialDate: DateTime.now(),
+                              initialDate: endDate ?? DateTime.now(),
                               firstDate: DateTime(2020),
                               lastDate: DateTime.now(),
                             );
@@ -128,21 +135,21 @@ class _PatroliState extends State<Patroli> {
 
                   const SizedBox(height: 12),
 
-                  // ===== FILTER SATPAM (DROPDOWN DB) =====
+                  // ===== FILTER SATPAM =====
                   Obx(() {
-                    return DropdownButtonFormField<int>(
+                    return DropdownButtonFormField<int?>(
                       value: selectedSatpamId,
                       decoration: const InputDecoration(
                         labelText: 'Satpam',
                         border: OutlineInputBorder(),
                       ),
                       items: [
-                        const DropdownMenuItem<int>(
+                        const DropdownMenuItem<int?>(
                           value: null,
                           child: Text('Semua Satpam'),
                         ),
                         ...controller.satpamList.map(
-                          (s) => DropdownMenuItem<int>(
+                          (s) => DropdownMenuItem<int?>(
                             value: s.id,
                             child: Text(s.name),
                           ),
@@ -156,23 +163,23 @@ class _PatroliState extends State<Patroli> {
 
                   const SizedBox(height: 12),
 
-                  // ===== FILTER SATPAM (DROPDOWN DB) =====
+                  // ===== FILTER LOKASI =====
                   Obx(() {
-                    return DropdownButtonFormField<int>(
+                    return DropdownButtonFormField<int?>(
                       value: selectedLocationId,
                       decoration: const InputDecoration(
                         labelText: 'Lokasi',
                         border: OutlineInputBorder(),
                       ),
                       items: [
-                        const DropdownMenuItem<int>(
+                        const DropdownMenuItem<int?>(
                           value: null,
                           child: Text('Semua Lokasi'),
                         ),
                         ...controller.lokasiList.map(
-                          (s) => DropdownMenuItem<int>(
-                            value: s.id,
-                            child: Text(s.locationName),
+                          (l) => DropdownMenuItem<int?>(
+                            value: l.id,
+                            child: Text(l.locationName),
                           ),
                         ),
                       ],
@@ -182,8 +189,9 @@ class _PatroliState extends State<Patroli> {
                     );
                   }),
 
-                  const SizedBox(height: 12),
-                  // ===== ACTION =====
+                  const SizedBox(height: 16),
+
+                  // ===== ACTION BUTTON =====
                   Row(
                     children: [
                       Expanded(
@@ -225,6 +233,44 @@ class _PatroliState extends State<Patroli> {
   }
 
   // =========================
+  // LOGIC JAM RANGE
+  // =========================
+  bool _isJamDalamRange({
+    required String? jam,
+    required String? jamAwal,
+    required String? jamAkhir,
+  }) {
+    if (jam == null ||
+        jamAwal == null ||
+        jamAkhir == null ||
+        jam.isEmpty ||
+        jamAwal.isEmpty ||
+        jamAkhir.isEmpty)
+      return false;
+
+    DateTime? parse(String v) {
+      final p = v.split(':');
+      if (p.length < 2) return null;
+      return DateTime(2000, 1, 1, int.parse(p[0]), int.parse(p[1]));
+    }
+
+    final check = parse(jam);
+    var start = parse(jamAwal);
+    var end = parse(jamAkhir);
+
+    if (check == null || start == null || end == null) return false;
+
+    if (end.isBefore(start)) {
+      end = end.add(const Duration(days: 1));
+      if (check.isBefore(start)) {
+        return check.add(const Duration(days: 1)).isBefore(end);
+      }
+    }
+
+    return check.isAfter(start) && check.isBefore(end);
+  }
+
+  // =========================
   // UI
   // =========================
   @override
@@ -247,19 +293,12 @@ class _PatroliState extends State<Patroli> {
       floatingActionButton: FloatingActionButton(
         backgroundColor: Colors.green,
         child: const Icon(Icons.refresh, color: Colors.white),
-        onPressed: () {
-          controller.refreshData();
-        },
+        onPressed: controller.refreshData,
       ),
-
-      backgroundColor: Colors.white,
       body: Obx(() {
-        // 1️⃣ Loading pertama kali
         if (controller.isLoading.value && controller.patroliList.isEmpty) {
           return const Center(child: CircularProgressIndicator());
         }
-
-        // 2️⃣ Data kosong (hasil filter tidak ada)
         if (!controller.isLoading.value && controller.patroliList.isEmpty) {
           return Center(
             child: Column(
@@ -285,81 +324,103 @@ class _PatroliState extends State<Patroli> {
           );
         }
 
-        // 3️⃣ Data ada → List
         return ListView.builder(
           controller: scrollController,
           padding: const EdgeInsets.all(16),
           itemCount:
               controller.patroliList.length +
               (controller.isMoreDataAvailable.value ? 1 : 0),
-          itemBuilder: (context, index) {
-            if (index < controller.patroliList.length) {
-              final PatroliModel patroli = controller.patroliList[index];
+          itemBuilder: (context, i) {
+            if (i >= controller.patroliList.length) {
+              return const Center(child: CircularProgressIndicator());
+            }
 
-              return InkWell(
-                borderRadius: BorderRadius.circular(12),
-                onTap: () {
-                  Get.to(() => PatroliDetail(data: patroli));
-                },
-                child: Card(
-                  margin: const EdgeInsets.symmetric(vertical: 8),
-                  child: Padding(
-                    padding: const EdgeInsets.all(16),
-                    child: Column(
-                      crossAxisAlignment: CrossAxisAlignment.start,
-                      children: [
-                        _buildRow(
-                          "Tanggal / Jam",
-                          "${Fungsi.tanggalIndo(patroli.tanggal)} - ${patroli.jam}",
-                        ),
-                        _buildRow(
-                          "Lokasi/Satpam",
-                          "${patroli.locationName} - ${patroli.satpamName}",
-                        ),
-                        _buildRow("Catatan", patroli.note ?? ''),
-                      ],
-                    ),
+            final p = controller.patroliList[i];
+            final isOut = !_isJamDalamRange(
+              jam: p.jam,
+              jamAwal: p.jamAwal ?? '',
+              jamAkhir: p.jamAkhir ?? '',
+            );
+
+            return InkWell(
+              onTap: () => Get.to(() => PatroliDetail(data: p)),
+              child: Card(
+                margin: const EdgeInsets.symmetric(vertical: 8),
+                shape: RoundedRectangleBorder(
+                  borderRadius: BorderRadius.circular(12),
+                  side: BorderSide(
+                    color: isOut ? Colors.red : Colors.transparent,
+                    width: 1.5,
                   ),
                 ),
-              );
-            } else {
-              return const Padding(
-                padding: EdgeInsets.all(16),
-                child: Center(child: CircularProgressIndicator()),
-              );
-            }
+                child: Padding(
+                  padding: const EdgeInsets.all(16),
+                  child: Column(
+                    crossAxisAlignment: CrossAxisAlignment.start,
+                    children: [
+                      if (p.foto != null && p.foto!.isNotEmpty)
+                        ClipRRect(
+                          borderRadius: BorderRadius.circular(10),
+                          child: Image.network(
+                            "${ApiProvider.imageUrl}/${p.foto!}",
+                            height: 180,
+                            width: double.infinity,
+                            fit: BoxFit.cover,
+                          ),
+                        ),
+                      if (p.foto != null && p.foto!.isNotEmpty)
+                        const SizedBox(height: 12),
+                      _buildRow(
+                        "Tanggal / Jam",
+                        "${Fungsi.tanggalIndo(p.tanggal)} - ${p.jam}",
+                        valueColor: isOut ? Colors.red : Colors.black87,
+                      ),
+                      _buildRow(
+                        "Jadwal Patroli",
+                        "${p.jamAwal ?? ''} - ${p.jamAkhir ?? ''}",
+                        valueColor: isOut ? Colors.red : Colors.black87,
+                      ),
+                      _buildRow(
+                        "Lokasi / Satpam",
+                        "${p.locationName} - ${p.satpamName}",
+                      ),
+                      _buildRow("Catatan", p.note ?? '-'),
+                    ],
+                  ),
+                ),
+              ),
+            );
           },
         );
       }),
     );
   }
 
-  Widget _buildRow(String label, String value) {
+  Widget _buildRow(String l, String v, {Color valueColor = Colors.black87}) {
     return Padding(
       padding: const EdgeInsets.symmetric(vertical: 4),
       child: Column(
         crossAxisAlignment: CrossAxisAlignment.start,
         children: [
           Text(
-            label,
+            l,
             style: TextStyle(
               fontSize: 11,
               fontWeight: FontWeight.w600,
               color: Colors.grey.shade600,
-              letterSpacing: 0.3,
             ),
           ),
           const SizedBox(height: 2),
           Text(
-            value,
-            style: const TextStyle(
+            v,
+            style: TextStyle(
               fontSize: 13,
-              fontWeight: FontWeight.w500,
-              height: 1.25, // 🔥 lebih padat
+              fontWeight: FontWeight.w600,
+              color: valueColor,
             ),
           ),
           const SizedBox(height: 6),
-          Divider(height: 1, thickness: 0.6, color: Colors.grey.shade300),
+          Divider(height: 1, color: Colors.grey.shade300),
         ],
       ),
     );

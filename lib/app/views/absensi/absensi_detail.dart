@@ -103,7 +103,7 @@ class AbsensiDetail extends StatelessWidget {
                       );
                     },
                     child: _card(
-                      title: 'Lokasi',
+                      title: 'Lokasi Masuk',
                       children: [
                         _row('Latitude', data.latitude.toString()),
                         _row('Longitude', data.longitude.toString()),
@@ -131,7 +131,41 @@ class AbsensiDetail extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 12),
-
+                  InkWell(
+                    borderRadius: BorderRadius.circular(12),
+                    onTap: () {
+                      _absensi.openGoogleMaps(
+                        double.parse(data.latitude2.toString()),
+                        double.parse(data.longitude2.toString()),
+                      );
+                    },
+                    child: _card(
+                      title: 'Lokasi Pulang',
+                      children: [
+                        _row('Latitude', data.latitude2.toString()),
+                        _row('Longitude', data.longitude2.toString()),
+                        const SizedBox(height: 6),
+                        Row(
+                          children: [
+                            Icon(
+                              Icons.map_outlined,
+                              size: 16,
+                              color: Colors.blue,
+                            ),
+                            const SizedBox(width: 6),
+                            Text(
+                              'Buka di Google Maps',
+                              style: TextStyle(
+                                fontSize: 12,
+                                color: Colors.blue,
+                                fontWeight: FontWeight.w600,
+                              ),
+                            ),
+                          ],
+                        ),
+                      ],
+                    ),
+                  ),
                   _card(
                     title: 'Catatan',
                     children: [
@@ -143,6 +177,27 @@ class AbsensiDetail extends StatelessWidget {
 
                   const SizedBox(height: 12),
 
+                  Row(
+                    mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                    children: [
+                      if (data.fotoMasuk!.isNotEmpty)
+                        _buildFoto(
+                          "${ApiProvider.imageUrl}/${data.fotoMasuk}",
+                          'Masuk',
+                        ),
+
+                      if (data.fotoMasuk!.isNotEmpty ||
+                          data.fotoKeluar!.isNotEmpty)
+                        const SizedBox(width: 12),
+
+                      if (data.fotoKeluar!.isNotEmpty)
+                        _buildFoto(
+                          "${ApiProvider.imageUrl}/${data.fotoKeluar}",
+                          'Pulang',
+                        ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
                   _card(
                     title: 'Metadata',
                     children: [
@@ -228,4 +283,43 @@ class AbsensiDetail extends StatelessWidget {
       ),
     );
   }
+}
+
+Widget _buildFoto(String url, String label) {
+  return Column(
+    children: [
+      ClipOval(
+        child: Image.network(
+          url,
+          width: 106,
+          height: 106,
+          fit: BoxFit.cover,
+          errorBuilder: (_, __, ___) => Container(
+            width: 56,
+            height: 56,
+            color: Colors.grey.shade300,
+            child: const Icon(Icons.broken_image, size: 24),
+          ),
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return SizedBox(
+              width: 56,
+              height: 56,
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  value: progress.expectedTotalBytes != null
+                      ? progress.cumulativeBytesLoaded /
+                            progress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      const SizedBox(height: 4),
+      Text(label, style: const TextStyle(fontSize: 10)),
+    ],
+  );
 }

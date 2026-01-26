@@ -70,35 +70,15 @@ class PatroliDetail extends StatelessWidget {
                   ),
 
                   const SizedBox(height: 12),
-
                   _card(
                     title: 'Patroli Schedule',
-                    children: buildPatroliSchedule(data.jamAwal, data.jamAkhir)
-                        .map((schedule) {
-                          return Padding(
-                            padding: const EdgeInsets.symmetric(vertical: 4),
-                            child: Row(
-                              children: [
-                                const Icon(
-                                  Icons.schedule,
-                                  size: 16,
-                                  color: Colors.blueGrey,
-                                ),
-                                const SizedBox(width: 8),
-                                Text(
-                                  schedule,
-                                  style: const TextStyle(
-                                    fontSize: 14,
-                                    fontWeight: FontWeight.w500,
-                                  ),
-                                ),
-                              ],
-                            ),
-                          );
-                        })
-                        .toList(),
+                    children: [
+                      _row(
+                        'Jadwal Patroli',
+                        "${data.jamAwal} - ${data.jamAkhir}",
+                      ),
+                    ],
                   ),
-
                   const SizedBox(height: 12),
 
                   InkWell(

@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/absensi/absensi_controller.dart';
 import 'package:qbsc_saas/app/views/absensi/absensi_detail.dart';
@@ -308,10 +309,39 @@ class _AbsensiState extends State<Absensi> {
                           "${Fungsi.tanggalIndo(absensi.tanggal)} - ${absensi.namaSatpam}",
                         ),
                         _buildRow(
-                          "Jam Masuk / Pulang",
-                          "${Fungsi.formatToTime(absensi.jamMasuk)} - ${Fungsi.formatToTime(absensi.jamKeluar ?? '')}",
+                          "Shift / Jam Masuk / Pulang",
+                          "${absensi.shiftName} - ${Fungsi.formatToTime(absensi.jamMasuk)} - ${Fungsi.formatToTime(absensi.jamKeluar ?? '')}",
                         ),
-                        _buildRow("Catatan", catatanStatus),
+                        _buildRow(
+                          "Status",
+                          absensi.status == 1 ? 'MASUK' : 'PULANG',
+                        ),
+                        _buildRow(
+                          "Catatan Masuk / Catatan Pulang",
+                          "${absensi.catatanMasuk ?? '-'} | ${absensi.catatanKeluar ?? '-'}",
+                        ),
+
+                        const SizedBox(height: 8),
+                        Row(
+                          mainAxisAlignment: MainAxisAlignment.spaceEvenly,
+                          children: [
+                            if (absensi.fotoMasuk!.isNotEmpty)
+                              _buildFoto(
+                                "${ApiProvider.imageUrl}/${absensi.fotoMasuk}",
+                                'Masuk',
+                              ),
+
+                            if (absensi.fotoMasuk!.isNotEmpty ||
+                                absensi.fotoKeluar!.isNotEmpty)
+                              const SizedBox(width: 12),
+
+                            if (absensi.fotoKeluar!.isNotEmpty)
+                              _buildFoto(
+                                "${ApiProvider.imageUrl}/${absensi.fotoKeluar}",
+                                'Pulang',
+                              ),
+                          ],
+                        ),
                       ],
                     ),
                   ),
@@ -359,4 +389,45 @@ class _AbsensiState extends State<Absensi> {
       ),
     );
   }
+}
+
+Widget _buildFoto(String url, String label) {
+  return Column(
+    children: [
+      ClipRRect(
+        borderRadius: BorderRadius.circular(10),
+        child: Image.network(
+          url,
+          width: 56,
+          height: 56,
+          fit: BoxFit.cover,
+
+          errorBuilder: (_, __, ___) => Container(
+            width: 56,
+            height: 56,
+            color: Colors.grey.shade300,
+            child: const Icon(Icons.broken_image, size: 24),
+          ),
+          loadingBuilder: (context, child, progress) {
+            if (progress == null) return child;
+            return SizedBox(
+              width: 56,
+              height: 56,
+              child: Center(
+                child: CircularProgressIndicator(
+                  strokeWidth: 2,
+                  value: progress.expectedTotalBytes != null
+                      ? progress.cumulativeBytesLoaded /
+                            progress.expectedTotalBytes!
+                      : null,
+                ),
+              ),
+            );
+          },
+        ),
+      ),
+      const SizedBox(height: 4),
+      Text(label, style: const TextStyle(fontSize: 10)),
+    ],
+  );
 }

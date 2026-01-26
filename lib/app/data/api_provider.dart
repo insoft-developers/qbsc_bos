@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 
 class ApiProvider extends GetxService {
-  static const String appVersion = "1.0.0";
+  static const String appVersion = "1.0.1";
 
   static const bool isDev = false;
   static const String devUrl = "http://192.168.100.3:8000";
@@ -48,6 +48,14 @@ class ApiProvider extends GetxService {
           }
 
           return handler.next(options);
+        },
+
+        onError: (dio.DioException e, handler) async {
+          if (e.response?.statusCode == 401) {
+            await _forceLogout();
+          }
+
+          return handler.next(e);
         },
       ),
     );
@@ -102,5 +110,11 @@ class ApiProvider extends GetxService {
     } else {
       return Exception("Network error: ${e.message}");
     }
+  }
+
+  Future<void> _forceLogout() async {
+    await AppPrefs.clearAll();
+
+    Get.offAllNamed('/login');
   }
 }

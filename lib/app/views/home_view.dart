@@ -138,11 +138,12 @@ class _HomeViewState extends State<HomeView> {
           : Get.toNamed('/tamu');
     } else if (label == 'Resume Laporan Kandang') {
       String comid = AppPrefs.getComId() ?? '0';
+      String token = AppPrefs.getToken() ?? '';
       isArea == '1'
           ? Get.to(() => UserArea(menu: 'resume'))
           : Get.to(
               () => ResumeKandang(
-                url: '${ApiEndpoint.webviewResumeKandang}/$comid',
+                url: '${ApiEndpoint.webviewResumeKandang}/$comid?token=$token',
                 title: "Resume Kandang",
               ),
             );

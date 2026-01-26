@@ -70,9 +70,11 @@ class UserArea extends StatelessWidget {
                           Get.toNamed('/tamu');
                         } else if (menu == 'resume') {
                           String comid = AppPrefs.getMonComId().toString();
+                          String token = AppPrefs.getToken().toString();
                           Get.to(
                             () => ResumeKandang(
-                              url: '${ApiEndpoint.webviewResumeKandang}/$comid',
+                              url:
+                                  '${ApiEndpoint.webviewResumeKandang}/$comid?token=$token',
                               title: "Resume Kandang",
                             ),
                           );

@@ -1,10 +1,10 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/kandang/kipas/kipas_controller.dart';
 import 'package:qbsc_saas/app/views/kandang/kipas/kipas_detail.dart';
 import 'package:qbsc_saas/app/views/kandang/kipas/kipas_model.dart';
-import 'package:qbsc_saas/app/views/kandang/suhu/suhu_model.dart';
 
 class KandangKipas extends StatefulWidget {
   const KandangKipas({super.key});
@@ -312,6 +312,40 @@ class _KandangKipasState extends State<KandangKipas> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // =====================
+                        // FOTO (PALING ATAS)
+                        // =====================
+                        if (kipasData.foto != null &&
+                            kipasData.foto!.isNotEmpty)
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12),
+                            ),
+                            child: Image.network(
+                              "${ApiProvider.imageUrl}/${kipasData.foto!}",
+                              height: 180,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (c, e, s) => Container(
+                                height: 180,
+                                color: Colors.grey.shade200,
+                                child: const Center(
+                                  child: Icon(Icons.broken_image),
+                                ),
+                              ),
+                              loadingBuilder: (c, child, loading) {
+                                if (loading == null) return child;
+                                return Container(
+                                  height: 180,
+                                  color: Colors.grey.shade200,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        const SizedBox(height: 12),
                         _buildRow(
                           "Tanggal / Jam",
                           "${Fungsi.tanggalIndo(kipasData.tanggal)} - ${kipasData.jam}",
@@ -382,10 +416,10 @@ class _KandangKipasState extends State<KandangKipas> {
       physics: const NeverScrollableScrollPhysics(),
       itemCount: kipasList.length,
       gridDelegate: const SliverGridDelegateWithFixedCrossAxisCount(
-        crossAxisCount: 4,
-        mainAxisSpacing: 12,
-        crossAxisSpacing: 12,
-        childAspectRatio: 1,
+        crossAxisCount: 6, // ✅ 1 baris 6 kipas
+        mainAxisSpacing: 8,
+        crossAxisSpacing: 8,
+        childAspectRatio: 0.9, // sedikit lebih ramping
       ),
       itemBuilder: (context, index) {
         final bool isOn = kipasList[index] == 1;
@@ -393,18 +427,19 @@ class _KandangKipasState extends State<KandangKipas> {
         return Container(
           decoration: BoxDecoration(
             color: isOn ? Colors.green.shade50 : Colors.grey.shade100,
-            borderRadius: BorderRadius.circular(12),
+            borderRadius: BorderRadius.circular(8), // lebih kecil
             border: Border.all(
               color: isOn ? Colors.green : Colors.grey.shade300,
             ),
           ),
+          padding: const EdgeInsets.all(4),
           child: Column(
             mainAxisAlignment: MainAxisAlignment.center,
             children: [
               Text(
-                'Kipas ${index + 1}',
+                '${index + 1}', // 🔥 lebih ringkas dari "Kipas 1"
                 style: const TextStyle(
-                  fontSize: 12,
+                  fontSize: 10,
                   fontWeight: FontWeight.w600,
                 ),
               ),
@@ -412,7 +447,7 @@ class _KandangKipasState extends State<KandangKipas> {
               Text(
                 isOn ? 'ON' : 'OFF',
                 style: TextStyle(
-                  fontSize: 11,
+                  fontSize: 9,
                   fontWeight: FontWeight.bold,
                   color: isOn ? Colors.green : Colors.grey,
                 ),

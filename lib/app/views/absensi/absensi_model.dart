@@ -5,6 +5,8 @@ class AbsensiModel {
   final String namaSatpam;
   final String? latitude;
   final String? longitude;
+  final String? latitude2;
+  final String? longitude2;
   final String jamMasuk;
   final String? jamKeluar;
   final int? shiftId;
@@ -19,6 +21,8 @@ class AbsensiModel {
   final String namaPerusahaan;
   final String createdAt;
   final String? fotoSatpam;
+  final String? fotoMasuk;
+  final String? fotoKeluar;
 
   AbsensiModel({
     required this.id,
@@ -27,6 +31,8 @@ class AbsensiModel {
     required this.namaSatpam,
     this.latitude,
     this.longitude,
+    this.latitude2,
+    this.longitude2,
     required this.jamMasuk,
     this.jamKeluar,
     this.shiftId,
@@ -41,6 +47,8 @@ class AbsensiModel {
     required this.namaPerusahaan,
     required this.createdAt,
     this.fotoSatpam,
+    this.fotoMasuk,
+    this.fotoKeluar,
   });
 
   // Parsing dari JSON
@@ -52,6 +60,8 @@ class AbsensiModel {
       namaSatpam: json['satpam']['name'] ?? '',
       latitude: json['latitude'] ?? '',
       longitude: json['longitude'] ?? '',
+      latitude2: json['latitude2'] ?? json['latitude'] ?? '',
+      longitude2: json['longitude2'] ?? json['longitude'] ?? '',
       jamMasuk: json['jam_masuk'],
       jamKeluar: json['jam_keluar'],
       shiftId: json['shift_id'],
@@ -66,6 +76,8 @@ class AbsensiModel {
       namaPerusahaan: json['company']['company_name'] ?? '',
       createdAt: json['created_at'],
       fotoSatpam: json['satpam']['face_photo_path'] ?? '',
+      fotoMasuk: json['foto_masuk'] ?? '',
+      fotoKeluar: json['foto_pulang'] ?? '',
     );
   }
 

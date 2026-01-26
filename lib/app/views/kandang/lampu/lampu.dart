@@ -1,5 +1,6 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
+import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/utils/fungsi.dart';
 import 'package:qbsc_saas/app/views/kandang/lampu/lampu_controller.dart';
 import 'package:qbsc_saas/app/views/kandang/lampu/lampu_detail.dart';
@@ -307,6 +308,39 @@ class _KandangLampuState extends State<KandangLampu> {
                     child: Column(
                       crossAxisAlignment: CrossAxisAlignment.start,
                       children: [
+                        // FOTO (PALING ATAS)
+                        // =====================
+                        if (lampuData.foto != null &&
+                            lampuData.foto!.isNotEmpty)
+                          ClipRRect(
+                            borderRadius: const BorderRadius.vertical(
+                              top: Radius.circular(12),
+                            ),
+                            child: Image.network(
+                              "${ApiProvider.imageUrl}/${lampuData.foto!}",
+                              height: 180,
+                              width: double.infinity,
+                              fit: BoxFit.cover,
+                              errorBuilder: (c, e, s) => Container(
+                                height: 180,
+                                color: Colors.grey.shade200,
+                                child: const Center(
+                                  child: Icon(Icons.broken_image),
+                                ),
+                              ),
+                              loadingBuilder: (c, child, loading) {
+                                if (loading == null) return child;
+                                return Container(
+                                  height: 180,
+                                  color: Colors.grey.shade200,
+                                  child: const Center(
+                                    child: CircularProgressIndicator(),
+                                  ),
+                                );
+                              },
+                            ),
+                          ),
+                        const SizedBox(height: 12),
                         _buildRow(
                           "Tanggal / Jam",
                           "${Fungsi.tanggalIndo(lampuData.tanggal)} - ${lampuData.jam}",

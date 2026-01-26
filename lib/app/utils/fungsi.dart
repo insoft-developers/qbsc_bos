@@ -44,3 +44,31 @@ class Fungsi {
         '${twoDigit(dt.hour)}:${twoDigit(dt.minute)}';
   }
 }
+
+bool isJamDalamRange({
+  required String jam, // contoh: 23:02:00
+  required String jamAwal, // contoh: 12:09
+  required String jamAkhir, // contoh: 12:30
+}) {
+  DateTime parseJam(String value) {
+    final parts = value.split(':');
+    final hour = int.parse(parts[0]);
+    final minute = int.parse(parts[1]);
+    final second = parts.length > 2 ? int.parse(parts[2]) : 0;
+    return DateTime(2000, 1, 1, hour, minute, second);
+  }
+
+  final jamCheck = parseJam(jam);
+  var start = parseJam(jamAwal);
+  var end = parseJam(jamAkhir);
+
+  // ⏰ handle lintas hari (misal 22:00 - 02:00)
+  if (end.isBefore(start)) {
+    end = end.add(const Duration(days: 1));
+    if (jamCheck.isBefore(start)) {
+      return jamCheck.add(const Duration(days: 1)).isBefore(end);
+    }
+  }
+
+  return jamCheck.isAfter(start) && jamCheck.isBefore(end);
+}

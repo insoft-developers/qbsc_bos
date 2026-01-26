@@ -75,7 +75,7 @@ class PaketController extends GetxController {
       } else {
         isArea.value = body['is_area'].toString();
         await AppPrefs.setIsUserArea(isArea.value);
-        SnackbarHelper.error('Warning', body['message'].toString());
+        // SnackbarHelper.error('Warning', body['message'].toString());
       }
     } catch (e) {
       // SnackbarHelper.error('Warning', e.toString());
