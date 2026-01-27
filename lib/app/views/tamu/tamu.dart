@@ -259,15 +259,13 @@ class _TamuPageState extends State<TamuPage> {
             },
           ),
           const SizedBox(height: 10),
-          myComId == selectedComId
-              ? FloatingActionButton(
-                  backgroundColor: Colors.blue,
-                  child: const Icon(Icons.add, color: Colors.white),
-                  onPressed: () {
-                    Get.to(() => TamuAddPage());
-                  },
-                )
-              : const SizedBox(),
+          FloatingActionButton(
+            backgroundColor: Colors.blue,
+            child: const Icon(Icons.add, color: Colors.white),
+            onPressed: () {
+              Get.to(() => TamuAddPage());
+            },
+          ),
         ],
       ),
 

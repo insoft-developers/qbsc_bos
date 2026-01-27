@@ -33,6 +33,7 @@ class ApiEndpoint {
   static const String kinerjaSatpam = "$apiPrefix/kinerja_satpam";
   static const String tracking = "$apiPrefix/tracking";
   static const String trackingMap = "$apiPrefix/map";
+  static const String liveTracking = "$apiPrefix/live_tracking";
 
   static const String webviewResumeKandang =
       "${ApiProvider.rootUrl}/api$apiPrefix/kandang_resume";

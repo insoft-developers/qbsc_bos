@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
+import 'package:qbsc_saas/app/views/tracking/live/live_map.dart';
 import 'package:qbsc_saas/app/views/tracking/rute/rute.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
 
@@ -46,9 +47,9 @@ class Tracking extends StatelessWidget {
             onTap: () {
               final isArea = AppPrefs.getIsUserArea() ?? '0';
               if (item['label'] == 'Live Tracking') {
-                // isArea == '1'
-                //     ? Get.to(() => UserArea(menu: 'absensi'))
-                //     : Get.toNamed('/absensi');
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'live-tracking'))
+                    : Get.to(() => LiveMapView());
               } else if (item['label'] == 'Tracking Rute Patroli') {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'rute'))

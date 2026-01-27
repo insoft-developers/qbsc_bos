@@ -28,7 +28,9 @@ class BroadcastAddController extends GetxController {
 
   Future<void> saveData() async {
     isLoading.value = true;
-    int comid = int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
     int userid = int.parse(AppPrefs.getUserId() ?? '0');
 
     try {

@@ -73,8 +73,12 @@ class _TrackingMapState extends State<TrackingMap>
   Widget build(BuildContext context) {
     return Scaffold(
       appBar: AppBar(
-        title: const Text('Tracking Map'),
         backgroundColor: const Color(0xFF0F172A),
+        title: const Text(
+          'Tracking Rute Map',
+          style: TextStyle(color: Colors.white),
+        ),
+        iconTheme: const IconThemeData(color: Colors.white),
       ),
       body: Obx(() {
         if (controller.isLoading.value) {
@@ -165,52 +169,73 @@ class _TrackingMapState extends State<TrackingMap>
                   ),
 
                   // ===== MARKER + LABEL =====
+                  // ===== MARKER + LABEL (LABEL DI ATAS PIN) =====
                   MarkerLayer(
                     markers: [
                       Marker(
                         point: movingPos!,
-                        width: 160,
-                        height: 60,
-                        child: Row(
-                          crossAxisAlignment: CrossAxisAlignment.center,
+                        width: 220,
+                        height: 110,
+                        alignment: Alignment.center,
+                        child: Stack(
                           children: [
-                            const Icon(
-                              Icons.location_pin,
-                              color: Colors.red,
-                              size: 36,
+                            /// ===== LABEL DI ATAS =====
+                            Positioned(
+                              top: -18,
+                              right: 20,
+                              child: Container(
+                                constraints: const BoxConstraints(
+                                  maxWidth: 400,
+                                ),
+                                padding: const EdgeInsets.only(
+                                  top: 26,
+                                  right: 10,
+                                  left: 10,
+                                  bottom: 5,
+                                ),
+                                decoration: BoxDecoration(
+                                  color: Colors.black.withOpacity(0.75),
+                                  borderRadius: BorderRadius.circular(8),
+                                ),
+                                child: Column(
+                                  crossAxisAlignment: CrossAxisAlignment.start,
+                                  mainAxisSize: MainAxisSize.min,
+                                  children: [
+                                    Text(
+                                      current.keterangan,
+                                      maxLines: 2,
+                                      overflow: TextOverflow.ellipsis,
+                                      softWrap: true,
+                                      style: const TextStyle(
+                                        color: Colors.white,
+                                        fontSize: 11,
+                                        fontWeight: FontWeight.w600,
+                                        height: 1.3,
+                                      ),
+                                    ),
+                                    const SizedBox(height: 2),
+                                    Text(
+                                      current.tanggal,
+                                      style: const TextStyle(
+                                        color: Colors.white70,
+                                        fontSize: 10,
+                                      ),
+                                    ),
+                                  ],
+                                ),
+                              ),
                             ),
-                            const SizedBox(width: 4),
 
-                            /// ===== LABEL =====
-                            Container(
-                              padding: const EdgeInsets.symmetric(
-                                horizontal: 8,
-                                vertical: 4,
-                              ),
-                              decoration: BoxDecoration(
-                                color: Colors.black.withOpacity(0.7),
-                                borderRadius: BorderRadius.circular(6),
-                              ),
-                              child: Column(
-                                mainAxisSize: MainAxisSize.min,
-                                crossAxisAlignment: CrossAxisAlignment.start,
-                                children: [
-                                  Text(
-                                    current.keterangan,
-                                    style: const TextStyle(
-                                      color: Colors.white,
-                                      fontSize: 11,
-                                      fontWeight: FontWeight.w600,
-                                    ),
-                                  ),
-                                  Text(
-                                    current.tanggal,
-                                    style: const TextStyle(
-                                      color: Colors.white70,
-                                      fontSize: 10,
-                                    ),
-                                  ),
-                                ],
+                            const SizedBox(height: 4),
+
+                            /// ===== PIN MERAH (TETAP DI TITIK RUTE) =====
+                            Positioned(
+                              top: 20,
+                              right: 91,
+                              child: const Icon(
+                                Icons.location_pin,
+                                color: Colors.red,
+                                size: 36,
                               ),
                             ),
                           ],
