@@ -4,7 +4,7 @@ import 'package:flutter/foundation.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 
 class ApiProvider extends GetxService {
-  static const String appVersion = "1.0.3";
+  static const String appVersion = "1.0.5";
 
   static const bool isDev = false;
   static const String devUrl = "http://192.168.100.3:8000";
@@ -109,6 +109,60 @@ class ApiProvider extends GetxService {
       return Exception("Error ${e.response?.statusCode}: ${e.response?.data}");
     } else {
       return Exception("Network error: ${e.message}");
+    }
+  }
+
+  Future<dio.Response> put(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? query,
+    dio.Options? options,
+  }) async {
+    try {
+      return await _dio.put(
+        endpoint,
+        data: data,
+        queryParameters: query,
+        options: options,
+      );
+    } on dio.DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<dio.Response> patch(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? query,
+    dio.Options? options,
+  }) async {
+    try {
+      return await _dio.patch(
+        endpoint,
+        data: data,
+        queryParameters: query,
+        options: options,
+      );
+    } on dio.DioException catch (e) {
+      throw _handleError(e);
+    }
+  }
+
+  Future<dio.Response> delete(
+    String endpoint, {
+    dynamic data,
+    Map<String, dynamic>? query,
+    dio.Options? options,
+  }) async {
+    try {
+      return await _dio.delete(
+        endpoint,
+        data: data,
+        queryParameters: query,
+        options: options,
+      );
+    } on dio.DioException catch (e) {
+      throw _handleError(e);
     }
   }
 

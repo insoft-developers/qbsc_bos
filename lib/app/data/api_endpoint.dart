@@ -42,4 +42,7 @@ class ApiEndpoint {
   static const String changePassword = "$apiPrefix/user_password_change";
   static const String cardSatpam = "$apiPrefix/card_satpam";
   static const String cekUserArea = "$apiPrefix/check_user_area";
+  static const String masterSatpam = "$apiPrefix/master_satpam";
+  static const String ubahStatusSatpam = "$apiPrefix/ubah_status_satpam";
+  static const String satpamLupaPulang = "$apiPrefix/satpam_lupa_pulang";
 }

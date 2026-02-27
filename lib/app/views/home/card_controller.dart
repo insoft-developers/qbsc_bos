@@ -18,7 +18,7 @@ class CardController extends GetxController {
 
   @override
   void onInit() {
-    AppPrefs.setMonComId(AppPrefs.getComId() ?? '0');
+    // AppPrefs.setMonComId(AppPrefs.getComId() ?? '0');
     fetchSatpam();
 
     super.onInit();
@@ -71,6 +71,28 @@ class CardController extends GetxController {
 
     if (!await launchUrl(uri, mode: LaunchMode.externalApplication)) {
       throw 'Tidak bisa membuka WhatsApp';
+    }
+  }
+
+  Future<void> lupaPulang(int id) async {
+    isLoading.value = true;
+
+    try {
+      final response = await api.post(
+        ApiEndpoint.satpamLupaPulang,
+        data: {"id": id},
+      );
+
+      var body = response.data;
+      if (body['success']) {
+        fetchSatpam();
+      } else {
+        SnackbarHelper.error('Error', body['message'].toString());
+      }
+    } catch (e) {
+      SnackbarHelper.error('Error', e.toString());
+    } finally {
+      isLoading.value = false;
     }
   }
 }

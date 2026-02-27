@@ -18,6 +18,7 @@ import 'package:qbsc_saas/app/views/doc/doc.dart';
 import 'package:qbsc_saas/app/views/home_view.dart';
 import 'package:qbsc_saas/app/views/kandang/kandang_tab_page.dart';
 import 'package:qbsc_saas/app/views/login_view.dart';
+import 'package:qbsc_saas/app/views/master/master.dart';
 import 'package:qbsc_saas/app/views/notifikasi/notifikasi.dart';
 import 'package:qbsc_saas/app/views/patroli/patroli.dart';
 import 'package:qbsc_saas/app/views/pengaturan/password/change_password.dart';
@@ -34,6 +35,17 @@ Future<void> main() async {
   WidgetsFlutterBinding.ensureInitialized();
 
   await Firebase.initializeApp();
+
+  FirebaseMessaging messaging = FirebaseMessaging.instance;
+
+  await messaging.requestPermission(alert: true, badge: true, sound: true);
+
+  await messaging.setForegroundNotificationPresentationOptions(
+    alert: true,
+    badge: true,
+    sound: true,
+  );
+
   FirebaseMessaging.onBackgroundMessage(firebaseMessagingBackgroundHandler);
 
   // ===========================
@@ -55,7 +67,14 @@ Future<void> main() async {
       ?.createNotificationChannel(channel);
 
   const initAndroid = AndroidInitializationSettings("@mipmap/ic_launcher");
-  const initSettings = InitializationSettings(android: initAndroid);
+
+  const DarwinInitializationSettings initIOS = DarwinInitializationSettings();
+
+  const InitializationSettings initSettings = InitializationSettings(
+    android: initAndroid,
+    iOS: initIOS,
+  );
+
   await flutterLocalNotificationsPlugin.initialize(initSettings);
 
   // ===========================
@@ -100,9 +119,8 @@ class _MyAppState extends State<MyApp> {
       print('foreground notif');
 
       final notif = message.notification;
-      final android = notif?.android;
 
-      if (notif != null && android != null) {
+      if (notif != null) {
         flutterLocalNotificationsPlugin.show(
           notif.hashCode,
           notif.title,
@@ -144,6 +162,7 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/notifikasi', page: () => Notifikasi()),
         GetPage(name: '/pengaturan/profile', page: () => ProfilePage()),
         GetPage(name: '/pengaturan/password', page: () => ChangePassword()),
+        GetPage(name: '/master', page: () => const Master()),
       ],
     );
   }

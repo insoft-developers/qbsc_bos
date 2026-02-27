@@ -81,6 +81,7 @@ class _HomeViewState extends State<HomeView> {
 
       {'icon': 'assets/images/kejadian.png', 'label': 'Laporan Situasi'},
       {'icon': 'assets/images/tamu.png', 'label': 'Monitoring Tamu'},
+      {'icon': 'assets/images/master.png', 'label': 'Master Data'},
       {'icon': 'assets/images/setting.png', 'label': 'Pengaturan'},
     ];
 
@@ -120,11 +121,8 @@ class _HomeViewState extends State<HomeView> {
           ? Get.to(() => UserArea(menu: 'kandang'))
           : Get.toNamed('/kandang');
     } else if (label == 'Lihat Catatan DOC') {
-      // Get.toNamed('/doc');
-
       isArea == '1' ? Get.to(() => UserArea(menu: 'doc')) : Get.toNamed('/doc');
     } else if (label == 'Buat Broadcast') {
-      // Get.toNamed('/broadcast');
       isArea == '1'
           ? Get.to(() => UserArea(menu: 'broadcast'))
           : Get.toNamed('/broadcast');
@@ -151,6 +149,8 @@ class _HomeViewState extends State<HomeView> {
             );
     } else if (label == 'Pengaturan') {
       Get.toNamed('/pengaturan');
+    } else if (label == 'Master Data') {
+      Get.toNamed('/master');
     }
   }
 
@@ -461,7 +461,16 @@ class _HomeViewState extends State<HomeView> {
               borderRadius: BorderRadius.circular(10),
             ),
             child: ListTile(
-              leading: Image.asset(item['icon'], width: 32),
+              leading: Container(
+                padding: const EdgeInsets.all(6),
+
+                decoration: BoxDecoration(
+                  color: Colors.white,
+                  borderRadius: BorderRadius.circular(8),
+                  border: Border.all(color: Colors.green.shade300, width: 2.0),
+                ),
+                child: Image.asset(item['icon'], width: 32),
+              ),
               title: Text(
                 item['label'],
                 style: const TextStyle(fontWeight: FontWeight.w600),

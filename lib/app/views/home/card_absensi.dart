@@ -95,6 +95,19 @@ class _CardAbsensiState extends State<CardAbsensi> {
                           dataShow.satpamName,
                         );
                       },
+                      onLongPress: () {
+                        Get.defaultDialog(
+                          title: "Konfirmasi",
+                          middleText: "Ubah status jadi pulang?",
+                          textConfirm: "Ya",
+                          textCancel: "Batal",
+                          confirmTextColor: Colors.white,
+                          onConfirm: () async {
+                            Get.back();
+                            await controller.lupaPulang(dataShow.id);
+                          },
+                        );
+                      },
                       child: Card(
                         margin: const EdgeInsets.symmetric(vertical: 8),
                         child: Padding(

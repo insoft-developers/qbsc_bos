@@ -126,6 +126,7 @@ flutter:
     - assets/images/qbsc_bos.png
     - assets/images/broadcast.png
     - assets/images/maintenance.png
+    - assets/images/master.png
 
   # An image asset can refer to one or more resolution-specific "variants", see
   # https://flutter.dev/to/resolution-aware-images

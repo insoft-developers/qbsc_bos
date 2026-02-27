@@ -47,5 +47,27 @@
 		<true/>
 		<key>UIStatusBarHidden</key>
 		<false/>
+		<!-- CAMERA -->
+		<key>NSCameraUsageDescription</key>
+		<string>Aplikasi memerlukan akses kamera untuk absensi dan dokumentasi kejadian.</string>
+
+		<!-- PHOTO LIBRARY -->
+		<key>NSPhotoLibraryUsageDescription</key>
+		<string>Aplikasi memerlukan akses galeri untuk mengunggah foto laporan.</string>
+
+		<key>NSPhotoLibraryAddUsageDescription</key>
+		<string>Aplikasi memerlukan izin untuk menyimpan foto dokumentasi.</string>
+
+		<!-- LOCATION -->
+		<key>NSLocationWhenInUseUsageDescription</key>
+		<string>Aplikasi memerlukan lokasi untuk absensi dan patroli satpam.</string>
+
+		<key>NSLocationAlwaysAndWhenInUseUsageDescription</key>
+		<string>Aplikasi memerlukan lokasi untuk monitoring patroli secara real-time.</string>
+
+		<!-- NOTIFICATION -->
+		<key>FirebaseAppDelegateProxyEnabled</key>
+		<false/>
+
 	</dict>
 </plist>
