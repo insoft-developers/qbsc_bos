@@ -2,6 +2,7 @@ import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/views/master/satpam/index.dart';
+import 'package:qbsc_saas/app/views/master/user/index.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
 
 class Master extends StatelessWidget {
@@ -50,6 +51,10 @@ class Master extends StatelessWidget {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'master-satpam'))
                     : Get.to(() => SatpamPage());
+              } else if (item['label'] == 'Data User') {
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'master-user'))
+                    : Get.to(() => UserPage());
               }
             },
             child: Ink(

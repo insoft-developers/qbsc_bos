@@ -8,6 +8,7 @@ import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
 import 'package:qbsc_saas/app/views/kinerja/kinerja.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
 import 'package:qbsc_saas/app/views/master/satpam/index.dart';
+import 'package:qbsc_saas/app/views/master/user/index.dart';
 import 'package:qbsc_saas/app/views/tracking/live/live_map.dart';
 import 'package:qbsc_saas/app/views/tracking/rute/rute.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area_model.dart';
@@ -81,6 +82,8 @@ class UserArea extends StatelessWidget {
                   Get.to(() => LiveMapView());
                 } else if (menu == 'master-satpam') {
                   Get.to(() => SatpamPage());
+                } else if (menu == 'master-user') {
+                  Get.to(() => UserPage());
                 } else {
                   Get.toNamed('/$menu');
                 }
