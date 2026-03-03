@@ -1,5 +1,6 @@
 import 'dart:io';
 
+import 'package:dio/dio.dart' as dio;
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:image_picker/image_picker.dart';
@@ -21,8 +22,6 @@ class UserController extends GetxController {
   RxString email = ''.obs;
   RxString whatsapp = ''.obs;
   RxString password = ''.obs;
-  RxInt isUserArea = 0.obs;
-  RxInt isAdminMobile = 0.obs;
 
   // untuk edit
   final nameController = TextEditingController();
@@ -65,186 +64,183 @@ class UserController extends GetxController {
     }
   }
 
-  // Future<void> saveData() async {
-  //   isLoading.value = true;
-  //   int comid = AppPrefs.getIsUserArea() == '1'
-  //       ? int.parse(AppPrefs.getMonComId() ?? '0')
-  //       : int.parse(AppPrefs.getComId() ?? '0');
+  Future<void> saveData() async {
+    isLoading.value = true;
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
-  //   try {
-  //     // ====== Convert ke FormData ======
-  //     final formData = dio.FormData.fromMap({
-  //       '_method': 'POST',
-  //       'name': satpamName.value,
-  //       'whatsapp': whatsapp.value,
-  //       'password': password.value,
-  //       'comid': comid,
-  //       'is_danru': jabatan.value,
-  //       if (foto.value != null)
-  //         'foto': await dio.MultipartFile.fromFile(
-  //           foto.value!.path,
-  //           filename: foto.value!.path.split('/').last,
-  //         ),
-  //     });
+    try {
+      // ====== Convert ke FormData ======
+      final formData = dio.FormData.fromMap({
+        '_method': 'POST',
+        'name': name.value,
+        'whatsapp': whatsapp.value,
+        'email': email.value,
+        'password': password.value,
+        'comid': comid,
 
-  //     final response = await api.post(
-  //       ApiEndpoint.masterSatpam,
-  //       data: formData,
-  //       options: dio.Options(contentType: 'multipart/form-data'),
-  //     );
+        'is_mobile_admin': 0,
+        'is_area': 0,
+        if (foto.value != null)
+          'profile_image': await dio.MultipartFile.fromFile(
+            foto.value!.path,
+            filename: foto.value!.path.split('/').last,
+          ),
+      });
 
-  //     var body = response.data;
+      final response = await api.post(
+        ApiEndpoint.masterUser,
+        data: formData,
+        options: dio.Options(contentType: 'multipart/form-data'),
+      );
 
-  //     if (body['success']) {
-  //       getDataUser();
-  //       resetForm();
-  //       Get.back();
-  //     } else {
-  //       SnackbarHelper.error('Warning', body['message'].toString());
-  //     }
-  //   } catch (e) {
-  //     SnackbarHelper.error('Warning', e.toString());
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
+      var body = response.data;
 
-  // Future pickFoto() async {
-  //   final img = await picker.pickImage(source: ImageSource.gallery);
-  //   if (img != null) {
-  //     foto.value = File(img.path);
-  //   }
-  // }
+      if (body['success']) {
+        getDataUser();
+        resetForm();
+        Get.back();
+      } else {
+        SnackbarHelper.error('Warning', body['message'].toString());
+      }
+    } catch (e) {
+      SnackbarHelper.error('Warning', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-  // Future pickFotoCamera() async {
-  //   final img = await picker.pickImage(source: ImageSource.camera);
-  //   if (img != null) {
-  //     foto.value = File(img.path);
-  //   }
-  // }
+  Future pickFoto() async {
+    final img = await picker.pickImage(source: ImageSource.gallery);
+    if (img != null) {
+      foto.value = File(img.path);
+    }
+  }
 
-  // String toTitleCase(String text) {
-  //   if (text.isEmpty) return text;
-  //   return text
-  //       .split(' ')
-  //       .map((word) {
-  //         if (word.isEmpty) return word;
-  //         return word[0].toUpperCase() + word.substring(1).toLowerCase();
-  //       })
-  //       .join(' ');
-  // }
+  Future pickFotoCamera() async {
+    final img = await picker.pickImage(source: ImageSource.camera);
+    if (img != null) {
+      foto.value = File(img.path);
+    }
+  }
 
-  // void setName(String v) {
-  //   satpamName.value = toTitleCase(v);
-  // }
+  String toTitleCase(String text) {
+    if (text.isEmpty) return text;
+    return text
+        .split(' ')
+        .map((word) {
+          if (word.isEmpty) return word;
+          return word[0].toUpperCase() + word.substring(1).toLowerCase();
+        })
+        .join(' ');
+  }
 
-  // void setWhatsapp(String v) {
-  //   whatsapp.value = toTitleCase(v);
-  // }
+  void setName(String v) {
+    name.value = toTitleCase(v);
+  }
 
-  // void setPassword(String v) {
-  //   password.value = v;
-  // }
+  void setWhatsapp(String v) {
+    whatsapp.value = toTitleCase(v);
+  }
 
-  // void setJabatan(String? value) {
-  //   if (value != null) {
-  //     jabatan.value = value;
-  //     debugPrint("jabatan: ${jabatan.toString()}");
-  //   }
-  // }
+  void setPassword(String v) {
+    password.value = v;
+  }
 
-  // void resetForm() {
-  //   foto.value = null;
-  //   satpamName.value = '';
-  //   whatsapp.value = '';
-  //   password.value = '';
-  //   jabatan.value = '';
-  //   formKey.currentState?.reset();
-  // }
+  void setEmail(String v) {
+    email.value = v;
+  }
 
-  // void setEditData(SatpamModel data) {
-  //   userId = data.id.toString(); // simpan id untuk update
-  //   nameController.text = data.name;
-  //   whatsappController.text = data.whatsapp;
-  //   jabatan.value = data.isDanru ? "1" : "0";
-  //   fotoUrl.value = data.foto ?? ''; // URL dari API
-  //   foto.value = null; // reset file baru
-  //   isEdit(true);
+  void resetForm() {
+    foto.value = null;
+    name.value = '';
+    whatsapp.value = '';
+    password.value = '';
+    formKey.currentState?.reset();
+  }
 
-  //   debugPrint("jabatan di data ${data.isDanru}");
-  // }
+  void setEditData(UserModel data) {
+    userId = data.id.toString(); // simpan id untuk update
+    nameController.text = data.name;
+    whatsappController.text = data.whatsapp;
+    emailController.text = data.email;
+    fotoUrl.value = data.profileImage ?? ''; // URL dari API
+    foto.value = null; // reset file baru
+    isEdit(true);
+  }
 
-  // Future<void> updateData() async {
-  //   if (userId == null) return;
+  Future<void> updateData() async {
+    if (userId == null) return;
 
-  //   isLoading.value = true;
+    isLoading.value = true;
 
-  //   int comid = AppPrefs.getIsUserArea() == '1'
-  //       ? int.parse(AppPrefs.getMonComId() ?? '0')
-  //       : int.parse(AppPrefs.getComId() ?? '0');
+    int comid = AppPrefs.getIsUserArea() == '1'
+        ? int.parse(AppPrefs.getMonComId() ?? '0')
+        : int.parse(AppPrefs.getComId() ?? '0');
 
-  //   try {
-  //     final formData = dio.FormData.fromMap({
-  //       '_method': 'PATCH',
-  //       'name': nameController.text,
-  //       'whatsapp': whatsappController.text,
-  //       'comid': comid,
-  //       'is_danru': jabatan.value,
+    try {
+      final formData = dio.FormData.fromMap({
+        '_method': 'PATCH',
+        'name': nameController.text,
+        'whatsapp': whatsappController.text,
+        'email': emailController.text,
+        'comid': comid,
 
-  //       // password hanya kirim kalau diisi
-  //       if (passwordController.text.isNotEmpty)
-  //         'password': passwordController.text,
+        // password hanya kirim kalau diisi
+        if (passwordController.text.isNotEmpty)
+          'password': passwordController.text,
 
-  //       // foto hanya kirim kalau ada file baru
-  //       if (foto.value != null)
-  //         'foto': await dio.MultipartFile.fromFile(
-  //           foto.value!.path,
-  //           filename: foto.value!.path.split('/').last,
-  //         ),
-  //     });
+        // foto hanya kirim kalau ada file baru
+        if (foto.value != null)
+          'profile_image': await dio.MultipartFile.fromFile(
+            foto.value!.path,
+            filename: foto.value!.path.split('/').last,
+          ),
+      });
 
-  //     final response = await api.post(
-  //       "${ApiEndpoint.masterSatpam}/$userId",
-  //       data: formData,
-  //       options: dio.Options(contentType: 'multipart/form-data'),
-  //     );
+      final response = await api.post(
+        "${ApiEndpoint.masterUser}/$userId",
+        data: formData,
+        options: dio.Options(contentType: 'multipart/form-data'),
+      );
 
-  //     var body = response.data;
+      var body = response.data;
 
-  //     if (body['success']) {
-  //       getDataUser();
-  //       resetForm();
-  //       Get.back();
-  //     } else {
-  //       SnackbarHelper.error('Warning', body['message'].toString());
-  //     }
-  //   } catch (e) {
-  //     SnackbarHelper.error('Error', e.toString());
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
+      if (body['success']) {
+        getDataUser();
+        resetForm();
+        Get.back();
+      } else {
+        SnackbarHelper.error('Warning', body['message'].toString());
+      }
+    } catch (e) {
+      SnackbarHelper.error('Error', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
-  // Future<void> deleteData(String id) async {
-  //   isLoading.value = true;
+  Future<void> deleteData(String id) async {
+    isLoading.value = true;
 
-  //   try {
-  //     final response = await api.delete("${ApiEndpoint.masterSatpam}/$id");
+    try {
+      final response = await api.delete("${ApiEndpoint.masterUser}/$id");
 
-  //     var body = response.data;
+      var body = response.data;
 
-  //     if (body['success']) {
-  //       SnackbarHelper.success('Sukses', 'Data berhasil dihapus');
-  //       getDataUser();
-  //     } else {
-  //       SnackbarHelper.error('Warning', body['message'].toString());
-  //     }
-  //   } catch (e) {
-  //     SnackbarHelper.error('Error', e.toString());
-  //   } finally {
-  //     isLoading.value = false;
-  //   }
-  // }
+      if (body['success']) {
+        SnackbarHelper.success('Sukses', 'Data berhasil dihapus');
+        getDataUser();
+      } else {
+        SnackbarHelper.error('Warning', body['message'].toString());
+      }
+    } catch (e) {
+      SnackbarHelper.error('Error', e.toString());
+    } finally {
+      isLoading.value = false;
+    }
+  }
 
   Future<void> ubahStatusUser(int userId, int stat) async {
     isLoading.value = true;

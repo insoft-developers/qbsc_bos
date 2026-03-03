@@ -1,9 +1,9 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
-import 'package:qbsc_saas/app/views/master/satpam/add.dart';
-import 'package:qbsc_saas/app/views/master/satpam/edit.dart';
-import 'package:qbsc_saas/app/views/master/satpam/satpam_controller.dart';
+
+import 'package:qbsc_saas/app/views/master/user/add.dart';
+import 'package:qbsc_saas/app/views/master/user/edit.dart';
 import 'package:qbsc_saas/app/views/master/user/user_controller.dart';
 
 class UserPage extends StatefulWidget {
@@ -135,9 +135,12 @@ class _UserPageState extends State<UserPage> {
                               subtitle: Column(
                                 crossAxisAlignment: CrossAxisAlignment.start,
                                 children: [
+                                  Text(satpam.email),
                                   Text(satpam.whatsapp),
-
                                   Text(satpam.comName),
+                                  Text(
+                                    "Level: (${satpam.level.toUpperCase()})",
+                                  ),
                                 ],
                               ),
                               trailing: Container(
@@ -162,103 +165,112 @@ class _UserPageState extends State<UserPage> {
                             ),
 
                             const SizedBox(height: 12),
-                            const Divider(),
-                            const SizedBox(height: 8),
+                            satpam.level == 'owner'
+                                ? const SizedBox()
+                                : const Divider(),
+                            satpam.level == 'owner'
+                                ? const SizedBox()
+                                : const SizedBox(height: 8),
 
                             /// ====== 3 TOMBOL DI PALING BAWAH ======
-                            Row(
-                              children: [
-                                /// AKTIF / NONAKTIF
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: satpam.isActive == 1
-                                          ? Colors.orange
-                                          : Colors.green,
-                                    ),
-                                    onPressed: () async {
-                                      if (satpam.isActive == 1) {
-                                        await controller.ubahStatusUser(
-                                          satpam.id,
-                                          0,
-                                        );
-                                      } else {
-                                        await controller.ubahStatusUser(
-                                          satpam.id,
-                                          1,
-                                        );
-                                      }
-                                    },
-                                    child: Text(
-                                      satpam.isActive == 1
-                                          ? "Nonaktif"
-                                          : "Aktifkan",
-                                      style: const TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
+                            satpam.level == 'owner'
+                                ? const SizedBox()
+                                : Row(
+                                    children: [
+                                      /// AKTIF / NONAKTIF
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor:
+                                                satpam.isActive == 1
+                                                ? Colors.orange
+                                                : Colors.green,
+                                          ),
+                                          onPressed: () async {
+                                            if (satpam.isActive == 1) {
+                                              await controller.ubahStatusUser(
+                                                satpam.id,
+                                                0,
+                                              );
+                                            } else {
+                                              await controller.ubahStatusUser(
+                                                satpam.id,
+                                                1,
+                                              );
+                                            }
+                                          },
+                                          child: Text(
+                                            satpam.isActive == 1
+                                                ? "Nonaktif"
+                                                : "Aktifkan",
+                                            style: const TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
 
-                                const SizedBox(width: 8),
+                                      const SizedBox(width: 8),
 
-                                /// EDIT
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.blue,
-                                    ),
-                                    onPressed: () {
-                                      // Get.to(
-                                      //   () => SatpamEditPage(satpam: satpam),
-                                      // );
-                                    },
-                                    child: const Text(
-                                      "Edit",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
+                                      /// EDIT
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.blue,
+                                          ),
+                                          onPressed: () {
+                                            Get.to(
+                                              () => UserEditPage(
+                                                pengguna: satpam,
+                                              ),
+                                            );
+                                          },
+                                          child: const Text(
+                                            "Edit",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
-                                  ),
-                                ),
 
-                                const SizedBox(width: 8),
+                                      const SizedBox(width: 8),
 
-                                /// HAPUS
-                                Expanded(
-                                  child: ElevatedButton(
-                                    style: ElevatedButton.styleFrom(
-                                      backgroundColor: Colors.red,
-                                    ),
-                                    onPressed: () {
-                                      Get.defaultDialog(
-                                        title: "Konfirmasi",
-                                        middleText:
-                                            "Yakin ingin menghapus data ini?",
-                                        textConfirm: "Ya",
-                                        textCancel: "Batal",
-                                        confirmTextColor: Colors.white,
-                                        onConfirm: () async {
-                                          Get.back();
-                                          // await controller.deleteData(
-                                          //   satpam.id.toString(),
-                                          // );
-                                        },
-                                      );
-                                    },
-                                    child: const Text(
-                                      "Hapus",
-                                      style: TextStyle(
-                                        color: Colors.white,
-                                        fontSize: 10,
+                                      /// HAPUS
+                                      Expanded(
+                                        child: ElevatedButton(
+                                          style: ElevatedButton.styleFrom(
+                                            backgroundColor: Colors.red,
+                                          ),
+                                          onPressed: () {
+                                            Get.defaultDialog(
+                                              title: "Konfirmasi",
+                                              middleText:
+                                                  "Yakin ingin menghapus data ini?",
+                                              textConfirm: "Ya",
+                                              textCancel: "Batal",
+                                              confirmTextColor: Colors.white,
+                                              onConfirm: () async {
+                                                Get.back();
+                                                await controller.deleteData(
+                                                  satpam.id.toString(),
+                                                );
+                                              },
+                                            );
+                                          },
+                                          child: const Text(
+                                            "Hapus",
+                                            style: TextStyle(
+                                              color: Colors.white,
+                                              fontSize: 10,
+                                            ),
+                                          ),
+                                        ),
                                       ),
-                                    ),
+                                    ],
                                   ),
-                                ),
-                              ],
-                            ),
                           ],
                         ),
                       ),
@@ -272,7 +284,7 @@ class _UserPageState extends State<UserPage> {
         backgroundColor: Colors.blue,
         child: const Icon(Icons.add, color: Colors.white),
         onPressed: () {
-          Get.to(() => SatpamAddPage());
+          Get.to(() => UserAddPage());
         },
       ),
     );
