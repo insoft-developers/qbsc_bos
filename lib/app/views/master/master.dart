@@ -1,6 +1,8 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
+import 'package:qbsc_saas/app/views/master/jadwal_patroli/index.dart';
+import 'package:qbsc_saas/app/views/master/lokasi/index.dart';
 import 'package:qbsc_saas/app/views/master/satpam/index.dart';
 import 'package:qbsc_saas/app/views/master/user/index.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
@@ -12,6 +14,11 @@ class Master extends StatelessWidget {
     {'icon': Icons.people, 'label': 'Data Satpam'},
     {'icon': Icons.location_on, 'label': 'Data Lokasi'},
     {'icon': Icons.person, 'label': 'Data User'},
+    {'icon': Icons.schedule, 'label': 'Jadwal Patroli'},
+    {'icon': Icons.location_history, 'label': 'Lokasi Absen'},
+    {'icon': Icons.work_history, 'label': 'Jam Shift'},
+    {'icon': Icons.text_rotation_none, 'label': 'Running Text'},
+    {'icon': Icons.contact_emergency_sharp, 'label': 'Kontak Darurat'},
   ];
 
   @override
@@ -55,6 +62,14 @@ class Master extends StatelessWidget {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'master-user'))
                     : Get.to(() => UserPage());
+              } else if (item['label'] == 'Data Lokasi') {
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'master-lokasi'))
+                    : Get.to(() => LokasiPage());
+              } else if (item['label'] == 'Jadwal Patroli') {
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'master-jadwal'))
+                    : Get.to(() => JadwalPatroliPage());
               }
             },
             child: Ink(
@@ -147,6 +162,19 @@ String _getPengaturanSubtitle(String label) {
       return 'Kelola Data Lokasi Anda';
     case 'Data User':
       return 'Kelola Data User Anda';
+
+    case 'Jadwal Patroli':
+      return 'Kelola Jadwal Patroli Anda';
+    case 'Lokasi Absen':
+      return 'Atur Lokasi Titik Absen Satpam Anda';
+    case 'Jam Shift':
+      return 'Kelola Jam Shift Satpam Anda';
+
+    case 'Running Text':
+      return 'Kelola Running Text Anda';
+
+    case 'Kontak Darurat':
+      return 'Kelola Kontak Darurat Anda';
 
     default:
       return '';

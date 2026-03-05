@@ -7,6 +7,8 @@ import 'package:qbsc_saas/app/views/home/card_absensi.dart';
 import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
 import 'package:qbsc_saas/app/views/kinerja/kinerja.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
+import 'package:qbsc_saas/app/views/master/jadwal_patroli/index.dart';
+import 'package:qbsc_saas/app/views/master/lokasi/index.dart';
 import 'package:qbsc_saas/app/views/master/satpam/index.dart';
 import 'package:qbsc_saas/app/views/master/user/index.dart';
 import 'package:qbsc_saas/app/views/tracking/live/live_map.dart';
@@ -84,6 +86,10 @@ class UserArea extends StatelessWidget {
                   Get.to(() => SatpamPage());
                 } else if (menu == 'master-user') {
                   Get.to(() => UserPage());
+                } else if (menu == 'master-lokasi') {
+                  Get.to(() => LokasiPage());
+                } else if (menu == 'master-jadwal') {
+                  Get.to(() => JadwalPatroliPage());
                 } else {
                   Get.toNamed('/$menu');
                 }

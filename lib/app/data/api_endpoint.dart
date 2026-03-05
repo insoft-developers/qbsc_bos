@@ -47,4 +47,9 @@ class ApiEndpoint {
   static const String satpamLupaPulang = "$apiPrefix/satpam_lupa_pulang";
   static const String masterUser = "$apiPrefix/master_user";
   static const String ubahStatusUser = "$apiPrefix/ubah_status_user";
+  static const String masterLokasi = "$apiPrefix/master_lokasi";
+  static const String ubahStatusLokasi = "$apiPrefix/ubah_status_lokasi";
+  static const String masterJadwal = "$apiPrefix/master_jadwal";
+  static const String ubahStatusJadwal = "$apiPrefix/ubah_status_jadwal";
+  static const String jadwalPatroliDetail = "$apiPrefix/jadwal_patroli_detail";
 }
