@@ -27,6 +27,25 @@ class _LoginViewState extends State<LoginView> {
     return width >= 600;
   }
 
+  void _showSnackbar(String title, String message) {
+    if (Get.context == null) {
+      return;
+    }
+
+    final isError = title == 'Error';
+
+    Get.snackbar(
+      title,
+      message,
+      backgroundColor: isError ? Colors.red.shade600 : Colors.green.shade600,
+      colorText: Colors.white,
+      snackPosition: SnackPosition.BOTTOM,
+      margin: const EdgeInsets.all(16),
+      borderRadius: 8,
+      duration: const Duration(seconds: 2),
+    );
+  }
+
   @override
   Widget build(BuildContext context) {
     return Scaffold(
@@ -114,12 +133,7 @@ class _LoginViewState extends State<LoginView> {
                 // Lupa password
                 TextButton(
                   onPressed: () {
-                    Get.snackbar(
-                      'Info',
-                      'Silahkan hub administrator anda untuk minta reset password',
-                      backgroundColor: Colors.red,
-                      colorText: Colors.white,
-                      snackPosition: SnackPosition.BOTTOM,
+                    _showSnackbar( 'Error', 'Silahkan hub administrator anda untuk minta reset password',
                     );
                   },
                   child: Text(

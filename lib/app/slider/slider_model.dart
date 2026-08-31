@@ -1,9 +1,22 @@
-class SliderImageModel {
+class SliderModel {
   final String image;
+  final String title;
+  final String subtitle;
+  final String content;
 
-  SliderImageModel({required this.image});
+  SliderModel({
+    required this.image,
+    required this.title,
+    required this.subtitle,
+    required this.content,
+  });
 
-  factory SliderImageModel.fromJson(Map<String, dynamic> json) {
-    return SliderImageModel(image: json['image'] ?? '');
+  factory SliderModel.fromJson(Map<String, dynamic> json) {
+    return SliderModel(
+      image: json['image']?.toString() ?? '',
+      title: json['title']?.toString() ?? '',
+      subtitle: json['subtitle']?.toString() ?? '',
+      content: json['content']?.toString() ?? '',
+    );
   }
 }

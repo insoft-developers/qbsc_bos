@@ -52,10 +52,7 @@ class AuthController extends GetxController {
       await TopicService.subscribeNewTopic(topic);
       await TopicService.initializeTopicOnStartup();
 
-      Future.delayed(const Duration(milliseconds: 300), () {
-        Get.offAllNamed('/home');
-        _showSnackbar('Berhasil', 'Login sukses!');
-      });
+      Get.offAllNamed('/home');
     } catch (e) {
       _showSnackbar('Error', 'Login Gagal');
     } finally {
@@ -94,18 +91,31 @@ class AuthController extends GetxController {
   // SNACKBAR
   // =========================
   void _showSnackbar(String title, String message) {
-    if (Get.context == null) return;
-    Get.snackbar(
-      title,
-      message,
-      backgroundColor: title == 'Error'
-          ? Colors.red.shade600
-          : Colors.green.shade600,
-      colorText: Colors.white,
-      snackPosition: SnackPosition.BOTTOM,
-      margin: const EdgeInsets.all(16),
-      borderRadius: 8,
-      duration: const Duration(seconds: 2),
-    );
+    final context = Get.context;
+
+    if (context == null) return;
+
+    WidgetsBinding.instance.addPostFrameCallback((_) {
+      final messenger = ScaffoldMessenger.maybeOf(context);
+
+      if (messenger == null) return;
+
+      messenger
+        ..hideCurrentSnackBar()
+        ..showSnackBar(
+          SnackBar(
+            content: Text(message),
+            backgroundColor: title == 'Error'
+                ? Colors.red.shade600
+                : Colors.green.shade600,
+            behavior: SnackBarBehavior.floating,
+            margin: const EdgeInsets.all(16),
+            shape: RoundedRectangleBorder(
+              borderRadius: BorderRadius.circular(8),
+            ),
+            duration: const Duration(seconds: 2),
+          ),
+        );
+    });
   }
 }

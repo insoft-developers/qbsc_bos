@@ -10,11 +10,11 @@ import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/slider/sliderpage_controller.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/views/home/card_absensi.dart';
-import 'package:qbsc_saas/app/views/home/card_controller.dart';
 import 'package:qbsc_saas/app/views/home/card_paket.dart';
 import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
 import 'package:qbsc_saas/app/views/kinerja/kinerja.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
+import 'package:qbsc_saas/app/views/slider_detail_page.dart';
 import 'package:qbsc_saas/app/views/tracking/tracking.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
 
@@ -65,9 +65,18 @@ class _HomeViewState extends State<HomeView> {
   }
 
   void _autoSlide() {
+    _timer?.cancel();
+
     _timer = Timer.periodic(const Duration(seconds: 5), (_) {
-      _pageController.nextPage(
-        duration: const Duration(milliseconds: 600),
+      if (!_pageController.hasClients) {
+        return;
+      }
+
+      final currentPage = _pageController.page?.round() ?? 1000;
+
+      _pageController.animateToPage(
+        currentPage + 1,
+        duration: const Duration(milliseconds: 700),
         curve: Curves.easeInOut,
       );
     });
@@ -338,7 +347,6 @@ class _HomeViewState extends State<HomeView> {
     });
   }
 
-  // ================= SLIDER =================
   Widget _buildImageSlider() {
     final controller = Get.put(SliderpageController());
 
@@ -350,58 +358,220 @@ class _HomeViewState extends State<HomeView> {
       if (controller.sliderImages.isEmpty) {
         return const SizedBox(
           height: 160,
-          child: Center(child: Text('Tidak ada gambar')),
+          child: Center(child: Text('Tidak ada slider')),
         );
       }
 
+      final banners = controller.sliderImages;
+
       return Column(
         children: [
+          // ==========================================
+          // SLIDER
+          // ==========================================
           SizedBox(
-            height: 160,
-            child: ClipRRect(
-              borderRadius: BorderRadius.circular(18),
-              child: PageView.builder(
-                controller: _pageController,
-                onPageChanged: (index) {
-                  setState(() {
-                    _currentSlide = index % controller.sliderImages.length;
-                  });
-                },
-                itemBuilder: (_, index) {
-                  final imageUrl =
-                      "${ApiProvider.imageUrl}/${controller.sliderImages[index % controller.sliderImages.length]}";
-                  print(imageUrl);
+            height: 180,
+            child: PageView.builder(
+              controller: _pageController,
+              itemCount: 1000000,
+              onPageChanged: (index) {
+                setState(() {
+                  _currentSlide = index % banners.length;
+                });
+              },
+              itemBuilder: (context, index) {
+                final banner = banners[index % banners.length];
 
-                  return CachedNetworkImage(
-                    imageUrl: imageUrl,
-                    fit: BoxFit.cover,
-                    placeholder: (_, __) => const _HighContrastShimmer(),
-                    errorWidget: (_, __, ___) => Container(
-                      color: Colors.grey.shade200,
-                      child: const Icon(Icons.image_not_supported, size: 40),
+                final imageUrl = "${ApiProvider.imageUrl}/${banner.image}";
+
+                return GestureDetector(
+                  onTap: () {
+                    Get.to(() => SliderDetailPage(slider: banner));
+                  },
+                  child: Container(
+                    margin: const EdgeInsets.symmetric(horizontal: 1),
+                    decoration: BoxDecoration(
+                      borderRadius: BorderRadius.circular(22),
+                      boxShadow: [
+                        BoxShadow(
+                          color: Colors.black.withOpacity(0.08),
+                          blurRadius: 18,
+                          offset: const Offset(0, 8),
+                        ),
+                      ],
                     ),
-                  );
-                },
-              ),
+                    child: ClipRRect(
+                      borderRadius: BorderRadius.circular(22),
+                      child: Stack(
+                        fit: StackFit.expand,
+                        children: [
+                          // ==========================================
+                          // IMAGE
+                          // ==========================================
+                          CachedNetworkImage(
+                            imageUrl: imageUrl,
+                            fit: BoxFit.cover,
+                            placeholder: (_, __) {
+                              return const _HighContrastShimmer();
+                            },
+                            errorWidget: (_, __, ___) {
+                              return Container(
+                                color: Colors.grey.shade200,
+                                child: const Icon(
+                                  Icons.image_not_supported_outlined,
+                                  size: 40,
+                                  color: Colors.grey,
+                                ),
+                              );
+                            },
+                          ),
+
+                          // ==========================================
+                          // OVERLAY
+                          // ==========================================
+                          Container(
+                            decoration: BoxDecoration(
+                              gradient: LinearGradient(
+                                begin: Alignment.centerLeft,
+                                end: Alignment.centerRight,
+                                colors: [
+                                  Colors.black.withOpacity(0.75),
+                                  Colors.black.withOpacity(0.30),
+                                  Colors.transparent,
+                                ],
+                              ),
+                            ),
+                          ),
+
+                          // ==========================================
+                          // CONTENT
+                          // ==========================================
+                          Padding(
+                            padding: const EdgeInsets.symmetric(
+                              horizontal: 22,
+                              vertical: 18,
+                            ),
+                            child: Column(
+                              crossAxisAlignment: CrossAxisAlignment.start,
+                              mainAxisAlignment: MainAxisAlignment.center,
+                              children: [
+                                // BADGE
+                                Container(
+                                  padding: const EdgeInsets.symmetric(
+                                    horizontal: 9,
+                                    vertical: 5,
+                                  ),
+                                  decoration: BoxDecoration(
+                                    color: Colors.white.withOpacity(0.18),
+                                    borderRadius: BorderRadius.circular(20),
+                                    border: Border.all(
+                                      color: Colors.white.withOpacity(0.20),
+                                    ),
+                                  ),
+                                  child: const Text(
+                                    'QBSC',
+                                    style: TextStyle(
+                                      color: Colors.white,
+                                      fontSize: 10,
+                                      fontWeight: FontWeight.w700,
+                                      letterSpacing: 1,
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 9),
+
+                                // ======================================
+                                // TITLE
+                                // ======================================
+                                Text(
+                                  banner.title,
+                                  maxLines: 1,
+                                  overflow: TextOverflow.ellipsis,
+                                  style: const TextStyle(
+                                    color: Colors.white,
+                                    fontSize: 19,
+                                    fontWeight: FontWeight.w700,
+                                    height: 1.15,
+                                  ),
+                                ),
+
+                                const SizedBox(height: 5),
+
+                                // ======================================
+                                // SUBTITLE
+                                // ======================================
+                                SizedBox(
+                                  width: 270,
+                                  child: Text(
+                                    banner.subtitle,
+                                    maxLines: 2,
+                                    overflow: TextOverflow.ellipsis,
+                                    style: TextStyle(
+                                      color: Colors.white.withOpacity(0.88),
+                                      fontSize: 12,
+                                      height: 1.35,
+                                      fontWeight: FontWeight.w400,
+                                    ),
+                                  ),
+                                ),
+
+                                const SizedBox(height: 7),
+                              ],
+                            ),
+                          ),
+
+                          // ==========================================
+                          // DETAIL INDICATOR / ARROW
+                          // ==========================================
+                          Positioned(
+                            right: 18,
+                            bottom: 18,
+                            child: Container(
+                              width: 32,
+                              height: 32,
+                              decoration: BoxDecoration(
+                                color: Colors.white.withOpacity(0.18),
+                                shape: BoxShape.circle,
+                                border: Border.all(
+                                  color: Colors.white.withOpacity(0.25),
+                                ),
+                              ),
+                              child: const Icon(
+                                Icons.arrow_forward_ios_rounded,
+                                color: Colors.white,
+                                size: 14,
+                              ),
+                            ),
+                          ),
+                        ],
+                      ),
+                    ),
+                  ),
+                );
+              },
             ),
           ),
-          const SizedBox(height: 8),
 
-          // indicator
+          const SizedBox(height: 9),
+
+          // ==========================================
+          // INDICATOR
+          // ==========================================
           Row(
             mainAxisAlignment: MainAxisAlignment.center,
-            children: List.generate(controller.sliderImages.length, (i) {
-              final active = _currentSlide == i;
+            children: List.generate(banners.length, (index) {
+              final active = _currentSlide == index;
+
               return AnimatedContainer(
-                duration: const Duration(milliseconds: 300),
-                margin: const EdgeInsets.symmetric(horizontal: 4),
-                width: active ? 18 : 6,
+                duration: const Duration(milliseconds: 250),
+                curve: Curves.easeOut,
+                margin: const EdgeInsets.symmetric(horizontal: 3),
+                width: active ? 20 : 6,
                 height: 6,
                 decoration: BoxDecoration(
-                  color: active
-                      ? const Color(0xFF0F172A)
-                      : Colors.grey.shade400,
-                  borderRadius: BorderRadius.circular(6),
+                  color: active ? Colors.indigo.shade600 : Colors.grey.shade300,
+                  borderRadius: BorderRadius.circular(10),
                 ),
               );
             }),

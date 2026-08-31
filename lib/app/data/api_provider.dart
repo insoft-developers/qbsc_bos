@@ -6,8 +6,8 @@ import 'package:qbsc_saas/app/utils/app_prefs.dart';
 class ApiProvider extends GetxService {
   static const String appVersion = "1.0.5";
 
-  static const bool isDev = false;
-  static const String devUrl = "http://192.168.100.3:8000";
+  static const bool isDev = true;
+  static const String devUrl = "http://192.168.100.73:8000";
   static const String proUrl = "https://app.qbsc.cloud";
 
   static const String rootUrl = isDev ? devUrl : proUrl;

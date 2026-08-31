@@ -52,4 +52,7 @@ class ApiEndpoint {
   static const String masterJadwal = "$apiPrefix/master_jadwal";
   static const String ubahStatusJadwal = "$apiPrefix/ubah_status_jadwal";
   static const String jadwalPatroliDetail = "$apiPrefix/jadwal_patroli_detail";
+  static const String jadwalDetailStore = "$apiPrefix/jadwal_detail_store";
+  static const String jadwalDetailUpdate = "$apiPrefix/jadwal_detail_update";
+  static const String jadwalDetailDelete = "$apiPrefix/jadwal_detail_delete";
 }

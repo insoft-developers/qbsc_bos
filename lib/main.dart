@@ -10,6 +10,7 @@ import 'package:qbsc_saas/app/controllers/auth_controller.dart'; // 🔥 DITAMBA
 
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
 import 'package:qbsc_saas/app/utils/firebase_background_handler.dart';
+import 'package:qbsc_saas/app/utils/snackbar_helper.dart';
 import 'package:qbsc_saas/app/utils/topic_service.dart';
 import 'package:qbsc_saas/app/views/absensi/absensi.dart';
 import 'package:qbsc_saas/app/views/broadcast/broadcast.dart';
@@ -143,6 +144,8 @@ class _MyAppState extends State<MyApp> {
   @override
   Widget build(BuildContext context) {
     return GetMaterialApp(
+      scaffoldMessengerKey:
+      SnackbarHelper.scaffoldMessengerKey,
       debugShowCheckedModeBanner: ApiProvider.isDev ? true : false,
       title: 'QBSC',
       initialRoute: '/splash',
