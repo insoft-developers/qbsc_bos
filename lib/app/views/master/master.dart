@@ -1,14 +1,21 @@
 import 'package:flutter/material.dart';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
+import 'package:qbsc_saas/app/views/master/emergency/index.dart';
 import 'package:qbsc_saas/app/views/master/jadwal_patroli/index.dart';
+import 'package:qbsc_saas/app/views/master/jam_shift/index.dart';
 import 'package:qbsc_saas/app/views/master/lokasi/index.dart';
+import 'package:qbsc_saas/app/views/master/lokasi_absen/index.dart';
+import 'package:qbsc_saas/app/views/master/lokasi_absen/lokasi_absen_controller.dart';
+import 'package:qbsc_saas/app/views/master/running_text/index.dart';
 import 'package:qbsc_saas/app/views/master/satpam/index.dart';
 import 'package:qbsc_saas/app/views/master/user/index.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
 
 class Master extends StatelessWidget {
-  const Master({super.key});
+  Master({super.key});
+
+  final con = Get.put(LokasiAbsenController());
 
   final List<Map<String, dynamic>> menuItems = const [
     {'icon': Icons.people, 'label': 'Data Satpam'},
@@ -70,6 +77,25 @@ class Master extends StatelessWidget {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'master-jadwal'))
                     : Get.to(() => JadwalPatroliPage());
+              } else if (item['label'] == 'Lokasi Absen') {
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'lokasi-absen'))
+                    : Get.to(()=> AturLokasiPage());
+              }
+              else if (item['label'] == 'Running Text') {
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'running-text'))
+                    : Get.to(()=> RunningTextPage());
+              }
+              else if (item['label'] == 'Kontak Darurat') {
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'darurat'))
+                    : Get.to(()=> EmergencyListPage());
+              }
+               else if (item['label'] == 'Jam Shift') {
+                isArea == '1'
+                    ? Get.to(() => UserArea(menu: 'jam-shift'))
+                    : Get.to(()=> JamShiftPage());
               }
             },
             child: Ink(

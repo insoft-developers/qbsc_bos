@@ -165,7 +165,7 @@ class _MyAppState extends State<MyApp> {
         GetPage(name: '/notifikasi', page: () => Notifikasi()),
         GetPage(name: '/pengaturan/profile', page: () => ProfilePage()),
         GetPage(name: '/pengaturan/password', page: () => ChangePassword()),
-        GetPage(name: '/master', page: () => const Master()),
+        GetPage(name: '/master', page: () =>  Master()),
       ],
     );
   }

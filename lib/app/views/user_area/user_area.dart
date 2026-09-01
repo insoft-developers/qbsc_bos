@@ -7,8 +7,13 @@ import 'package:qbsc_saas/app/views/home/card_absensi.dart';
 import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
 import 'package:qbsc_saas/app/views/kinerja/kinerja.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
+import 'package:qbsc_saas/app/views/master/emergency/index.dart';
 import 'package:qbsc_saas/app/views/master/jadwal_patroli/index.dart';
+import 'package:qbsc_saas/app/views/master/jam_shift/index.dart';
 import 'package:qbsc_saas/app/views/master/lokasi/index.dart';
+import 'package:qbsc_saas/app/views/master/lokasi_absen/index.dart';
+import 'package:qbsc_saas/app/views/master/lokasi_absen/lokasi_absen_controller.dart';
+import 'package:qbsc_saas/app/views/master/running_text/index.dart';
 import 'package:qbsc_saas/app/views/master/satpam/index.dart';
 import 'package:qbsc_saas/app/views/master/user/index.dart';
 import 'package:qbsc_saas/app/views/tracking/live/live_map.dart';
@@ -26,6 +31,7 @@ class UserArea extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final controller = Get.find<PaketController>();
+    Get.put(LokasiAbsenController());
 
     return Scaffold(
       backgroundColor: const Color(0xFFF6F8FC),
@@ -319,7 +325,24 @@ class UserArea extends StatelessWidget {
                         Get.to(
                           () => LokasiPage(),
                         );
-                      } else if (menu == 'master-jadwal') {
+                      } 
+                      else if (menu == 'lokasi-absen') {
+                        Get.to(()=> AturLokasiPage());
+                      }
+
+                      else if (menu == 'jam-shift') {
+                        Get.to(()=> JamShiftPage());
+                      }
+
+                      else if (menu == 'running-text') {
+                        Get.to(()=> RunningTextPage());
+                      }
+
+                      else if (menu == 'darurat') {
+                        Get.to(()=> EmergencyListPage());
+                      }
+
+                      else if (menu == 'master-jadwal') {
                         Get.to(
                           () => JadwalPatroliPage(),
                         );

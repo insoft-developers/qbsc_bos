@@ -55,4 +55,10 @@ class ApiEndpoint {
   static const String jadwalDetailStore = "$apiPrefix/jadwal_detail_store";
   static const String jadwalDetailUpdate = "$apiPrefix/jadwal_detail_update";
   static const String jadwalDetailDelete = "$apiPrefix/jadwal_detail_delete";
+  static const String lokasiAbsenUpdate = "$apiPrefix/lokasi_absen_update";
+  static const String getCurrentAbsenLocation = "$apiPrefix/get_current_absen_location";
+  static const String jamShift = "$apiPrefix/jam-shifts";
+  static const String runningText = "$apiPrefix/running-texts";
+  static const String emergencyList = "$apiPrefix/emergency-lists";
+
 }
