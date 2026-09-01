@@ -59,8 +59,53 @@ class Master extends StatelessWidget {
 
           return InkWell(
             borderRadius: BorderRadius.circular(18),
+
             onTap: () {
               final isArea = AppPrefs.getIsUserArea() ?? '0';
+              final isMobileAdmin = AppPrefs.getIsMobileAdmin() ?? '0';
+
+              // ==================================================
+              // CEK AKSES MOBILE ADMIN
+              // ==================================================
+
+              if (isMobileAdmin != '1') {
+                Get.dialog(
+                  AlertDialog(
+                    shape: RoundedRectangleBorder(
+                      borderRadius: BorderRadius.circular(16),
+                    ),
+                    title: const Row(
+                      children: [
+                        Icon(Icons.lock_outline_rounded, color: Colors.orange),
+                        SizedBox(width: 10),
+                        Text(
+                          'Akses Ditolak',
+                          style: TextStyle(fontWeight: FontWeight.w700),
+                        ),
+                      ],
+                    ),
+                    content: const Text(
+                      'Maaf, anda tidak punya akses untuk membuka menu ini.',
+                      style: TextStyle(fontSize: 14, height: 1.5),
+                    ),
+                    actions: [
+                      TextButton(
+                        onPressed: () {
+                          Get.back();
+                        },
+                        child: const Text('OK'),
+                      ),
+                    ],
+                  ),
+                );
+
+                return;
+              }
+
+              // ==================================================
+              // MENU
+              // ==================================================
+
               if (item['label'] == 'Data Satpam') {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'master-satpam'))
@@ -80,22 +125,19 @@ class Master extends StatelessWidget {
               } else if (item['label'] == 'Lokasi Absen') {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'lokasi-absen'))
-                    : Get.to(()=> AturLokasiPage());
-              }
-              else if (item['label'] == 'Running Text') {
+                    : Get.to(() => AturLokasiPage());
+              } else if (item['label'] == 'Running Text') {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'running-text'))
-                    : Get.to(()=> RunningTextPage());
-              }
-              else if (item['label'] == 'Kontak Darurat') {
+                    : Get.to(() => RunningTextPage());
+              } else if (item['label'] == 'Kontak Darurat') {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'darurat'))
-                    : Get.to(()=> EmergencyListPage());
-              }
-               else if (item['label'] == 'Jam Shift') {
+                    : Get.to(() => EmergencyListPage());
+              } else if (item['label'] == 'Jam Shift') {
                 isArea == '1'
                     ? Get.to(() => UserArea(menu: 'jam-shift'))
-                    : Get.to(()=> JamShiftPage());
+                    : Get.to(() => JamShiftPage());
               }
             },
             child: Ink(

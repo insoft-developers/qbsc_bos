@@ -14,6 +14,7 @@ class AuthController extends GetxController {
   var comId = ''.obs;
   var companyName = ''.obs;
   var isPeternakan = ''.obs;
+  var isMobileAdmin = ''.obs;
 
   final ApiProvider api = Get.find<ApiProvider>();
 
@@ -38,6 +39,8 @@ class AuthController extends GetxController {
           .toString();
       isPeternakan.value = response.data['data']['company']['is_peternakan']
           .toString();
+
+      isMobileAdmin.value = response.data['data']['is_mobile_admin'] ?? '';
 
       await AppPrefs.setToken(token.value);
       await AppPrefs.setUserName(userName.value);

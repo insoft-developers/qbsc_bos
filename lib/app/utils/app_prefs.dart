@@ -22,6 +22,7 @@ class AppPrefs {
   static const String _keyCompanyName = 'companyName';
   static const String _keyIsPeternakan = 'isPeternakan';
   static const String _keyIsUserArea = 'isUserArea';
+  static const String _keyIsMobileAdmin = 'isMobileAdmin';
 
   // ------------------ SETTERS ------------------
   static Future setToken(String value) async =>
@@ -29,6 +30,9 @@ class AppPrefs {
 
   static Future setUserName(String value) async =>
       await _prefs.setString(_keyUserName, value);
+
+  static Future setIsMobileAdmin(String value) async =>
+      await _prefs.setString(_keyIsMobileAdmin, value);
 
   static Future setUserId(String value) async =>
       await _prefs.setString(_keyUserId, value);
@@ -89,6 +93,8 @@ class AppPrefs {
   static String? getIsPeternakan() => _prefs.getString(_keyIsPeternakan);
 
   static String? getIsUserArea() => _prefs.getString(_keyIsUserArea);
+
+   static String? getIsMobileAdmin() => _prefs.getString(_keyIsMobileAdmin);
 
   // ------------------ CLEAR DATA ------------------
   static Future clearAll() async => await _prefs.clear();
