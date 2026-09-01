@@ -40,7 +40,7 @@ class AuthController extends GetxController {
       isPeternakan.value = response.data['data']['company']['is_peternakan']
           .toString();
 
-      isMobileAdmin.value = response.data['data']['is_mobile_admin'] ?? '';
+      isMobileAdmin.value = response.data['data']['is_mobile_admin'].toString();
 
       await AppPrefs.setToken(token.value);
       await AppPrefs.setUserName(userName.value);
@@ -49,6 +49,7 @@ class AuthController extends GetxController {
       await AppPrefs.setComId(comId.value);
       await AppPrefs.setCompanyName(companyName.value);
       await AppPrefs.setIsPeternakan(isPeternakan.value);
+      await AppPrefs.setIsMobileAdmin(isMobileAdmin.value);
 
       final topic = 'qbsc_bos_${comId.value}';
       await TopicService.unsubscribeOldTopic();
@@ -57,7 +58,7 @@ class AuthController extends GetxController {
 
       Get.offAllNamed('/home');
     } catch (e) {
-      _showSnackbar('Error', 'Login Gagal');
+      _showSnackbar('Error', e.toString());
     } finally {
       isLoading(false);
     }
@@ -72,6 +73,7 @@ class AuthController extends GetxController {
     userName.value = '';
     userId.value = '';
     userPhoto.value = '';
+    isMobileAdmin.value = '';
     Get.offAllNamed('/login');
   }
 
