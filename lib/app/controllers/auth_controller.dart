@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'package:get/get.dart';
 import 'package:qbsc_saas/app/data/api_endpoint.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
@@ -51,10 +52,12 @@ class AuthController extends GetxController {
       await AppPrefs.setIsPeternakan(isPeternakan.value);
       await AppPrefs.setIsMobileAdmin(isMobileAdmin.value);
 
-      final topic = 'qbsc_bos_${comId.value}';
-      await TopicService.unsubscribeOldTopic();
-      await TopicService.subscribeNewTopic(topic);
-      await TopicService.initializeTopicOnStartup();
+      if (Platform.isAndroid) {
+        final topic = 'qbsc_bos_${comId.value}';
+        await TopicService.unsubscribeOldTopic();
+        await TopicService.subscribeNewTopic(topic);
+        await TopicService.initializeTopicOnStartup();
+      }
 
       Get.offAllNamed('/home');
     } catch (e) {

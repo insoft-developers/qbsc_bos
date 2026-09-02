@@ -130,11 +130,21 @@ class MyApp extends StatefulWidget {
 class _MyAppState extends State<MyApp> {
   final homeC = Get.find<HomeController>(); // 🔥 akses badge notif
 
-  @override
+  // @override
+  // void initState() {
+  //   super.initState();
+  //   TopicService.initializeTopicOnStartup();
+  //   setupForegroundMessageHandler();
+  // }
+
+    @override
   void initState() {
     super.initState();
-    TopicService.initializeTopicOnStartup();
-    setupForegroundMessageHandler();
+
+    if (Platform.isAndroid) {
+      TopicService.initializeTopicOnStartup();
+      setupForegroundMessageHandler();
+    }
   }
 
   void setupForegroundMessageHandler() {
