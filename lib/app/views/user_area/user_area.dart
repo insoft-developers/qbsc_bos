@@ -16,6 +16,7 @@ import 'package:qbsc_saas/app/views/master/lokasi_absen/lokasi_absen_controller.
 import 'package:qbsc_saas/app/views/master/running_text/index.dart';
 import 'package:qbsc_saas/app/views/master/satpam/index.dart';
 import 'package:qbsc_saas/app/views/master/user/index.dart';
+import 'package:qbsc_saas/app/views/patroli_summary/lokasi_kunjungan_page.dart';
 import 'package:qbsc_saas/app/views/tracking/live/live_map.dart';
 import 'package:qbsc_saas/app/views/tracking/rute/rute.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area_model.dart';
@@ -23,10 +24,7 @@ import 'package:qbsc_saas/app/views/user_area/user_area_model.dart';
 class UserArea extends StatelessWidget {
   final String menu;
 
-  const UserArea({
-    super.key,
-    required this.menu,
-  });
+  const UserArea({super.key, required this.menu});
 
   @override
   Widget build(BuildContext context) {
@@ -84,9 +82,7 @@ class UserArea extends StatelessWidget {
                 decoration: BoxDecoration(
                   color: Colors.white.withOpacity(0.10),
                   borderRadius: BorderRadius.circular(12),
-                  border: Border.all(
-                    color: Colors.white.withOpacity(0.08),
-                  ),
+                  border: Border.all(color: Colors.white.withOpacity(0.08)),
                 ),
                 child: const Icon(
                   Icons.refresh_rounded,
@@ -127,12 +123,7 @@ class UserArea extends StatelessWidget {
 
           child: ListView(
             physics: const AlwaysScrollableScrollPhysics(),
-            padding: const EdgeInsets.fromLTRB(
-              18,
-              20,
-              18,
-              30,
-            ),
+            padding: const EdgeInsets.fromLTRB(18, 20, 18, 30),
             children: [
               // =============================================
               // HEADER INFO
@@ -143,10 +134,7 @@ class UserArea extends StatelessWidget {
                   gradient: const LinearGradient(
                     begin: Alignment.topLeft,
                     end: Alignment.bottomRight,
-                    colors: [
-                      Color(0xFF0F172A),
-                      Color(0xFF1E293B),
-                    ],
+                    colors: [Color(0xFF0F172A), Color(0xFF1E293B)],
                   ),
                   borderRadius: BorderRadius.circular(20),
                   boxShadow: [
@@ -182,8 +170,7 @@ class UserArea extends StatelessWidget {
                     // TEXT
                     Expanded(
                       child: Column(
-                        crossAxisAlignment:
-                            CrossAxisAlignment.start,
+                        crossAxisAlignment: CrossAxisAlignment.start,
                         children: [
                           const Text(
                             'Perusahaan Anda',
@@ -253,10 +240,7 @@ class UserArea extends StatelessWidget {
                 padding: EdgeInsets.only(left: 2),
                 child: Text(
                   'Pilih perusahaan yang ingin Anda kelola',
-                  style: TextStyle(
-                    fontSize: 11,
-                    color: Color(0xFF64748B),
-                  ),
+                  style: TextStyle(fontSize: 11, color: Color(0xFF64748B)),
                 ),
               ),
 
@@ -265,96 +249,61 @@ class UserArea extends StatelessWidget {
               // =============================================
               // COMPANY LIST
               // =============================================
-              ...List.generate(
-                controller.areaList.length,
-                (index) {
-                  final UserAreaModel data =
-                      controller.areaList[index];
+              ...List.generate(controller.areaList.length, (index) {
+                final UserAreaModel data = controller.areaList[index];
 
-                  return _CompanyCard(
-                    data: data,
-                    index: index,
-                    onTap: () async {
-                      await AppPrefs.setMonComId(
-                        data.monitoringComId.toString(),
+                return _CompanyCard(
+                  data: data,
+                  index: index,
+                  onTap: () async {
+                    await AppPrefs.setMonComId(data.monitoringComId.toString());
+
+                    if (menu == 'resume') {
+                      final comid = AppPrefs.getMonComId().toString();
+
+                      final token = AppPrefs.getToken().toString();
+
+                      Get.to(
+                        () => ResumeKandang(
+                          url:
+                              '${ApiEndpoint.webviewResumeKandang}/$comid?token=$token',
+                          title: 'Resume Kandang',
+                        ),
                       );
-
-                      if (menu == 'resume') {
-                        final comid =
-                            AppPrefs.getMonComId().toString();
-
-                        final token =
-                            AppPrefs.getToken().toString();
-
-                        Get.to(
-                          () => ResumeKandang(
-                            url:
-                                '${ApiEndpoint.webviewResumeKandang}/$comid?token=$token',
-                            title: 'Resume Kandang',
-                          ),
-                        );
-                      } else if (menu == 'card-absensi') {
-                        Get.to(
-                          () => CardAbsensi(),
-                        );
-                      } else if (menu == 'card-satpam') {
-                        Get.to(
-                          () => CardSatpamDetail(),
-                        );
-                      } else if (menu == 'laporan-kinerja') {
-                        Get.to(
-                          () => Kinerja(),
-                        );
-                      } else if (menu == 'rute') {
-                        Get.to(
-                          () => RutePage(),
-                        );
-                      } else if (menu == 'live-tracking') {
-                        Get.to(
-                          () => LiveMapView(),
-                        );
-                      } else if (menu == 'master-satpam') {
-                        Get.to(
-                          () => SatpamPage(),
-                        );
-                      } else if (menu == 'master-user') {
-                        Get.to(
-                          () => UserPage(),
-                        );
-                      } else if (menu == 'master-lokasi') {
-                        Get.to(
-                          () => LokasiPage(),
-                        );
-                      } 
-                      else if (menu == 'lokasi-absen') {
-                        Get.to(()=> AturLokasiPage());
-                      }
-
-                      else if (menu == 'jam-shift') {
-                        Get.to(()=> JamShiftPage());
-                      }
-
-                      else if (menu == 'running-text') {
-                        Get.to(()=> RunningTextPage());
-                      }
-
-                      else if (menu == 'darurat') {
-                        Get.to(()=> EmergencyListPage());
-                      }
-
-                      else if (menu == 'master-jadwal') {
-                        Get.to(
-                          () => JadwalPatroliPage(),
-                        );
-                      } else {
-                        Get.toNamed(
-                          '/$menu',
-                        );
-                      }
-                    },
-                  );
-                },
-              ),
+                    } else if (menu == 'card-absensi') {
+                      Get.to(() => CardAbsensi());
+                    } else if (menu == 'card-satpam') {
+                      Get.to(() => CardSatpamDetail());
+                    } else if (menu == 'sum-patroli') {
+                      Get.to(() => LokasiKunjunganPage());
+                    } else if (menu == 'laporan-kinerja') {
+                      Get.to(() => Kinerja());
+                    } else if (menu == 'rute') {
+                      Get.to(() => RutePage());
+                    } else if (menu == 'live-tracking') {
+                      Get.to(() => LiveMapView());
+                    } else if (menu == 'master-satpam') {
+                      Get.to(() => SatpamPage());
+                    } else if (menu == 'master-user') {
+                      Get.to(() => UserPage());
+                    } else if (menu == 'master-lokasi') {
+                      Get.to(() => LokasiPage());
+                    } else if (menu == 'lokasi-absen') {
+                      Get.to(() => AturLokasiPage());
+                    } else if (menu == 'jam-shift') {
+                      Get.to(() => JamShiftPage());
+                    } else if (menu == 'running-text') {
+                      Get.to(() => RunningTextPage());
+                    } else if (menu == 'darurat') {
+                      Get.to(() => EmergencyListPage());
+                    } else if (menu == 'master-jadwal') {
+                      Get.to(() => JadwalPatroliPage());
+                    } else {
+                      Get.toNamed('/$menu');
+                    }
+                  },
+                );
+              }),
             ],
           ),
         );
@@ -395,9 +344,7 @@ class _CompanyCard extends StatelessWidget {
 
             decoration: BoxDecoration(
               borderRadius: BorderRadius.circular(18),
-              border: Border.all(
-                color: const Color(0xFFE5E7EB),
-              ),
+              border: Border.all(color: const Color(0xFFE5E7EB)),
               boxShadow: [
                 BoxShadow(
                   color: Colors.black.withOpacity(0.035),
@@ -419,16 +366,12 @@ class _CompanyCard extends StatelessWidget {
                     gradient: const LinearGradient(
                       begin: Alignment.topLeft,
                       end: Alignment.bottomRight,
-                      colors: [
-                        Color(0xFF2563EB),
-                        Color(0xFF1D4ED8),
-                      ],
+                      colors: [Color(0xFF2563EB), Color(0xFF1D4ED8)],
                     ),
                     borderRadius: BorderRadius.circular(16),
                     boxShadow: [
                       BoxShadow(
-                        color: const Color(0xFF2563EB)
-                            .withOpacity(0.20),
+                        color: const Color(0xFF2563EB).withOpacity(0.20),
                         blurRadius: 10,
                         offset: const Offset(0, 5),
                       ),
@@ -448,8 +391,7 @@ class _CompanyCard extends StatelessWidget {
                 // =========================================
                 Expanded(
                   child: Column(
-                    crossAxisAlignment:
-                        CrossAxisAlignment.start,
+                    crossAxisAlignment: CrossAxisAlignment.start,
                     children: [
                       Text(
                         data.monitoringComName,
@@ -542,19 +484,16 @@ class _LoadingView extends StatelessWidget {
 
         const SizedBox(height: 24),
 
-        ...List.generate(
-          5,
-          (index) {
-            return Container(
-              height: 86,
-              margin: const EdgeInsets.only(bottom: 12),
-              decoration: BoxDecoration(
-                color: Colors.white,
-                borderRadius: BorderRadius.circular(18),
-              ),
-            );
-          },
-        ),
+        ...List.generate(5, (index) {
+          return Container(
+            height: 86,
+            margin: const EdgeInsets.only(bottom: 12),
+            decoration: BoxDecoration(
+              color: Colors.white,
+              borderRadius: BorderRadius.circular(18),
+            ),
+          );
+        }),
       ],
     );
   }

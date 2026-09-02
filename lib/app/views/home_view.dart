@@ -9,11 +9,14 @@ import 'package:qbsc_saas/app/data/api_endpoint.dart';
 import 'package:qbsc_saas/app/data/api_provider.dart';
 import 'package:qbsc_saas/app/slider/sliderpage_controller.dart';
 import 'package:qbsc_saas/app/utils/app_prefs.dart';
+import 'package:qbsc_saas/app/views/blogs/blog_page.dart';
+import 'package:qbsc_saas/app/views/blogs/webview_page.dart';
 import 'package:qbsc_saas/app/views/home/card_absensi.dart';
 import 'package:qbsc_saas/app/views/home/card_paket.dart';
 import 'package:qbsc_saas/app/views/home/card_satpam_detail.dart';
 import 'package:qbsc_saas/app/views/kinerja/kinerja.dart';
 import 'package:qbsc_saas/app/views/laporan/resume_kandang.dart';
+import 'package:qbsc_saas/app/views/patroli_summary/lokasi_kunjungan_page.dart';
 import 'package:qbsc_saas/app/views/slider_detail_page.dart';
 import 'package:qbsc_saas/app/views/tracking/tracking.dart';
 import 'package:qbsc_saas/app/views/user_area/user_area.dart';
@@ -586,15 +589,21 @@ class _HomeViewState extends State<HomeView> {
     return Row(
       children: const [
         _SummaryCard(
-          title: 'Satpam Masuk',
+          title: 'Bertugas',
           icon: Icons.login_rounded,
           color: Color(0xFF34C759),
         ),
         SizedBox(width: 12),
         _SummaryCard(
-          title: 'Satpam Aktif',
+          title: 'Aktif',
           icon: Icons.security_rounded,
           color: Color(0xFF0F172A),
+        ),
+        SizedBox(width: 12),
+        _SummaryCard(
+          title: 'Blog',
+          icon: Icons.web,
+          color: Color.fromARGB(255, 66, 84, 218),
         ),
       ],
     );
@@ -604,7 +613,7 @@ class _HomeViewState extends State<HomeView> {
     return Row(
       children: const [
         _SummaryCard(
-          title: 'Laporan Kinerja',
+          title: 'Lap Kinerja',
           icon: Icons.analytics,
           color: Color.fromARGB(255, 66, 84, 218),
         ),
@@ -613,6 +622,12 @@ class _HomeViewState extends State<HomeView> {
           title: 'Tracking',
           icon: Icons.location_pin,
           color: Color.fromARGB(255, 239, 96, 148),
+        ),
+        SizedBox(width: 12),
+        _SummaryCard(
+          title: 'Sum Patroli',
+          icon: Icons.timer,
+          color: Color(0xFF0F172A),
         ),
       ],
     );
@@ -670,20 +685,30 @@ class _SummaryCard extends StatelessWidget {
   void _handleTap() {
     final isArea = AppPrefs.getIsUserArea() ?? '0';
 
-    if (title == 'Satpam Masuk') {
+    if (title == 'Bertugas') {
       isArea == '1'
           ? Get.to(() => UserArea(menu: 'card-absensi'))
           : Get.to(() => CardAbsensi());
-    } else if (title == 'Satpam Aktif') {
+    } else if (title == 'Aktif') {
       isArea == '1'
           ? Get.to(() => UserArea(menu: 'card-satpam'))
           : Get.to(() => CardSatpamDetail());
-    } else if (title == 'Laporan Kinerja') {
+    } else if (title == 'Lap Kinerja') {
       isArea == '1'
           ? Get.to(() => UserArea(menu: 'laporan-kinerja'))
           : Get.to(() => Kinerja());
-    } else if (title == 'Tracking') {
+    } 
+    else if (title == 'Sum Patroli') {
+      isArea == '1'
+          ? Get.to(() => UserArea(menu: 'sum-patroli'))
+          : Get.to(() => LokasiKunjunganPage());
+    }
+    else if (title == 'Tracking') {
       Get.to(() => Tracking());
+    } else if (title == 'Blog') {
+      Get.to(
+        () => BlogPage()
+      );
     }
   }
 

@@ -60,5 +60,8 @@ class ApiEndpoint {
   static const String jamShift = "$apiPrefix/jam-shifts";
   static const String runningText = "$apiPrefix/running-texts";
   static const String emergencyList = "$apiPrefix/emergency-lists";
+  static const String blog = "$apiPrefix/blogs";
+  static const String lokasiKunjungan = "$apiPrefix/lokasi-kunjungan";
+  static const String lokasiKunjunganDetail = "$apiPrefix/lokasi-kunjungan/detail";
 
 }
