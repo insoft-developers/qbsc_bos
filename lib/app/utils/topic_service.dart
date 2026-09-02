@@ -1,4 +1,5 @@
 import 'package:firebase_messaging/firebase_messaging.dart';
+import 'dart:io';
 import 'package:shared_preferences/shared_preferences.dart';
 
 class TopicService {
@@ -33,6 +34,7 @@ class TopicService {
 
   /// Panggil saat app start / login
   static Future<void> initializeTopicOnStartup() async {
+    if (Platform.isIOS) return;
     // ✅ global topic (selalu aktif)
     await FirebaseMessaging.instance.subscribeToTopic(globalTopic);
 

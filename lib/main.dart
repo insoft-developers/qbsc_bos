@@ -1,3 +1,4 @@
+import 'dart:io';
 import 'firebase_options.dart';
 import 'package:firebase_core/firebase_core.dart';
 import 'package:firebase_messaging/firebase_messaging.dart';
@@ -40,7 +41,7 @@ Future<void> main() async {
 
   FirebaseMessaging messaging = FirebaseMessaging.instance;
 
-  await messaging.requestPermission(alert: true, badge: true, sound: true);
+  if (Platform.isAndroid) { await messaging.requestPermission(alert: true, badge: true, sound: true); }
 
   await messaging.setForegroundNotificationPresentationOptions(
     alert: true,
